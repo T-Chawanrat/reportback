@@ -11,7 +11,7 @@ exports.getWarehousesName = async (req, res) => {
     });
   } catch (err) {
     console.error("getWarehouses error:", err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาด" });
+    res.status(500).json({ message: "An error occurred" });
   }
 };
 
@@ -27,6 +27,6 @@ exports.getCustomersName = async (req, res) => {
     });
   } catch (err) {
     console.error("getCustomers error:", err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาด" });
+    res.status(500).json({ message: "An error occurred" });
   }
 };

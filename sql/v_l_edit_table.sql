@@ -5,7 +5,3 @@ FROM
 WHERE
     __WHERE_CLAUSE__
     -- ORDER BY __ORDER_BY__
-LIMIT
-    __LIMIT__
-OFFSET
-    __OFFSET__;

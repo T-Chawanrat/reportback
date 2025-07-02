@@ -139,7 +139,35 @@ exports.lEditTableClause = ({ receive_code, date }) => {
   return whereClause.trim();
 };
 
-exports.reportClause = ({}) => {
+exports.get01Clause = ({ search, has_remark }) => {
+  let whereClause = `
+    trantech.tm_product_transactions.DATETIME BETWEEN ( curdate() + INTERVAL -( 365 ) DAY ) AND curdate() AND
+ trantech.tm_product_transactions.status_id IN ('1','2','12') AND
+ trantech.tm_product_transactions_last.status_id NOT IN ('0','14','18')
+  `;
+
+  if (search) {
+    whereClause += ` AND (trantech.tm_product_transactions.receive_code LIKE ${mysql.escape(
+      "%" + search + "%"
+    )} )`;
+  }
+
+  if (has_remark === "yes") {
+    whereClause += ` AND (COALESCE(trantech.tm_receives.remark, '') <> '')`;
+  } else if (has_remark === "no") {
+    whereClause += ` AND (COALESCE(trantech.tm_receives.remark, '') = '')`;
+  }
+
+  return whereClause.trim();
+};
+
+exports.vLeditClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.vProductTransactionClause = ({}) => {
   let whereClause = `1=1`;
 
   return whereClause.trim();

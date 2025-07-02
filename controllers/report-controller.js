@@ -2,74 +2,13 @@ const db = require("../utils/db");
 const mysql = require("mysql2");
 const { loadSql } = require("../utils/loadSql");
 const {
-  buildWhereClause,
-  buildOrderClause,
   WhereClauseApp,
   OrderClauseApp,
   lEditTableClause,
   reportClause,
+  get01Clause,
 } = require("../utils/buildClause");
 const { formatDate } = require("../utils/formatDate");
-
-exports.getTransactions = async (req, res) => {
-  try {
-    const {
-      sort_by,
-      order,
-      search,
-      id,
-      page = 1,
-      limit = 50,
-      date,
-    } = req.query;
-
-    const offset = (page - 1) * limit;
-
-    const whereClause = buildWhereClause({ date, search, id });
-    const orderClause = buildOrderClause({ sort_by, order });
-
-    const countSql = `
-  SELECT 
-    COUNT(DISTINCT trantech.tm_product_transactions.serial_id) AS total_serial,
-    COUNT(DISTINCT trantech.tm_product_transactions.receive_code) AS total_receive_code
-  FROM trantech.tm_product_transactions
-  LEFT JOIN trantech.tm_product_transactions_last 
-    ON trantech.tm_product_transactions_last.serial_id = trantech.tm_product_transactions.serial_id
-  LEFT JOIN trantech.tm_receive_serials 
-    ON trantech.tm_receive_serials.receive_code = trantech.tm_product_transactions.receive_code
-  LEFT JOIN trantech.um_customers 
-    ON trantech.um_customers.customer_id = trantech.tm_receive_serials.customer_id
-  WHERE ${whereClause}
-`;
-
-    const [[{ total_serial, total_receive_code }]] = await db.query(countSql);
-
-    let sql = loadSql("get-transactions.sql");
-
-    sql = sql
-      .replace("__WHERE_CLAUSE__", whereClause)
-      .replace("__ORDER_BY__", orderClause)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
-
-    const [rows] = await db.query(sql);
-
-    rows.forEach((row) => {
-      if (row.datetime) {
-        row.datetime = formatDate(row.datetime);
-      }
-    });
-
-    res.json({
-      data: rows,
-      total_receive_code,
-      total_serial,
-    });
-  } catch (err) {
-    console.error("getTransactions error:", err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาด" });
-  }
-};
 
 exports.getTransactionsApp = async (req, res) => {
   try {
@@ -125,7 +64,7 @@ exports.getTransactionsApp = async (req, res) => {
     });
   } catch (err) {
     console.error("getTransactionsApp error:", err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาด" });
+    res.status(500).json({ message: "An error occurred" });
   }
 };
 
@@ -165,18 +104,18 @@ exports.getLedit = async (req, res) => {
     });
   } catch (err) {
     console.error("error:", err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาด" });
+    res.status(500).json({ message: "An error occurred" });
   }
 };
 
-exports.getReport = async (req, res) => {
+exports.getIndex = async (req, res) => {
   try {
     const { page = 1, limit = 1000 } = req.query;
 
     const offset = (page - 1) * limit;
     const whereClause = reportClause({});
 
-    let sql = loadSql("report.sql");
+    let sql = loadSql("v_index.sql");
 
     sql = sql
       .replace("__WHERE_CLAUSE__", whereClause)
@@ -189,7 +128,109 @@ exports.getReport = async (req, res) => {
       data: rows,
     });
   } catch (err) {
-    console.error("report error:", err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาด" });
+    console.error("Index error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.getVLedit = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+
+    const offset = (page - 1) * limit;
+    const whereClause = reportClause({});
+
+    let sql = loadSql("v_l_edit_table.sql");
+
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    res.json({
+      data: rows,
+    });
+  } catch (err) {
+    console.error("L edit error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.getVProductTransaction = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+
+    const offset = (page - 1) * limit;
+    const whereClause = reportClause({});
+
+    let sql = loadSql("v_product_transactions.sql");
+
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    res.json({
+      data: rows,
+    });
+  } catch (err) {
+    console.error("Product Transaction error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.updateEdit = async (req, res) => {
+  try {
+    await db.query("CALL trantech_bi.update_edit_table();");
+    const [rows] = await db.query(
+      "SELECT * FROM trantech_bi.view_l_edit_table"
+    );
+    if (res) {
+      res.json({ data: rows });
+    } else {
+      console.log(`[${new Date().toLocaleString()}] update successful`);
+    }
+  } catch (err) {
+    if (res) {
+      res.status(500).json({ message: "An error occurred" });
+    }
+    console.error(
+      `[${new Date().toLocaleString()}] update failed:`,
+      err.message
+    );
+  }
+};
+
+setInterval(() => {
+  exports.updateEdit();
+}, 30 * 60 * 1000);
+
+exports.get01 = async (req, res) => {
+  try {
+    const { search, page = 1, limit = 200, has_remark } = req.query;
+
+    const offset = (page - 1) * limit;
+    const whereClause = get01Clause({
+      search,
+      has_remark,
+    });
+
+    let sql = loadSql("01_not18do_resend.sql");
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+    res.json({
+      data: rows,
+    });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
   }
 };
