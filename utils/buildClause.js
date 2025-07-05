@@ -139,31 +139,47 @@ exports.lEditTableClause = ({ receive_code, date }) => {
   return whereClause.trim();
 };
 
-exports.get01Clause = ({ search, has_remark }) => {
-  let whereClause = `
-    trantech.tm_product_transactions.DATETIME BETWEEN ( curdate() + INTERVAL -( 365 ) DAY ) AND curdate() AND
- trantech.tm_product_transactions.status_id IN ('1','2','12') AND
- trantech.tm_product_transactions_last.status_id NOT IN ('0','14','18')
-  `;
+// exports.get01Clause = ({ search }) => {
+//   let whereClause = `1=1`;
+
+//   if (search) {
+//     whereClause += ` AND (
+//     trantech_bi.v01_not18_do_resend.receive_code LIKE ${mysql.escape(
+//       "%" + search + "%"
+//     )}
+//     OR trantech_bi.v01_not18_do_resend.reference_no LIKE ${mysql.escape(
+//       "%" + search + "%"
+//     )}
+//   )`;
+//   }
+
+//   return whereClause.trim();
+// };
+
+exports.get01Clause = ({ search }) => {
+  let whereClause = `1=1`;
 
   if (search) {
-    whereClause += ` AND (trantech.tm_product_transactions.receive_code LIKE ${mysql.escape(
-      "%" + search + "%"
-    )} )`;
-  }
-
-  if (has_remark === "yes") {
-    whereClause += ` AND (COALESCE(trantech.tm_receives.remark, '') <> '')`;
-  } else if (has_remark === "no") {
-    whereClause += ` AND (COALESCE(trantech.tm_receives.remark, '') = '')`;
+    whereClause += ` AND (
+      receive_code LIKE ${mysql.escape("%" + search + "%")}
+      OR reference_no LIKE ${mysql.escape("%" + search + "%")}
+    )`;
   }
 
   return whereClause.trim();
 };
 
-exports.vLeditClause = ({}) => {
+exports.vLeditClause = ({ type, receive_id }) => {
   let whereClause = `1=1`;
+  if (type) {
+    whereClause += ` AND type = ${mysql.escape(type)}`;
+  }
 
+  if (receive_id) {
+    whereClause += ` AND view_l_edit_table.receive_id = ${mysql.escape(
+      receive_id
+    )}`;
+  }
   return whereClause.trim();
 };
 

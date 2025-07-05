@@ -5,7 +5,7 @@ const {
   WhereClauseApp,
   OrderClauseApp,
   lEditTableClause,
-  reportClause,
+  vLeditClause,
   get01Clause,
 } = require("../utils/buildClause");
 const { formatDate } = require("../utils/formatDate");
@@ -108,37 +108,14 @@ exports.getLedit = async (req, res) => {
   }
 };
 
-exports.getIndex = async (req, res) => {
-  try {
-    const { page = 1, limit = 1000 } = req.query;
-
-    const offset = (page - 1) * limit;
-    const whereClause = reportClause({});
-
-    let sql = loadSql("v_index.sql");
-
-    sql = sql
-      .replace("__WHERE_CLAUSE__", whereClause)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
-
-    const [rows] = await db.query(sql);
-
-    res.json({
-      data: rows,
-    });
-  } catch (err) {
-    console.error("Index error:", err);
-    res.status(500).json({ message: "An error occurred" });
-  }
-};
-
 exports.getVLedit = async (req, res) => {
   try {
     const { page = 1, limit = 1000 } = req.query;
-
     const offset = (page - 1) * limit;
-    const whereClause = reportClause({});
+    const receive_id = req.query.receive_id;
+    const date = req.query.date;
+
+    const whereClause = vLeditClause({ type: "PUBLIC",  receive_id });
 
     let sql = loadSql("v_l_edit_table.sql");
 
@@ -154,31 +131,6 @@ exports.getVLedit = async (req, res) => {
     });
   } catch (err) {
     console.error("L edit error:", err);
-    res.status(500).json({ message: "An error occurred" });
-  }
-};
-
-exports.getVProductTransaction = async (req, res) => {
-  try {
-    const { page = 1, limit = 1000 } = req.query;
-
-    const offset = (page - 1) * limit;
-    const whereClause = reportClause({});
-
-    let sql = loadSql("v_product_transactions.sql");
-
-    sql = sql
-      .replace("__WHERE_CLAUSE__", whereClause)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
-
-    const [rows] = await db.query(sql);
-
-    res.json({
-      data: rows,
-    });
-  } catch (err) {
-    console.error("Product Transaction error:", err);
     res.status(500).json({ message: "An error occurred" });
   }
 };
@@ -207,17 +159,41 @@ exports.updateEdit = async (req, res) => {
 
 setInterval(() => {
   exports.updateEdit();
-}, 30 * 60 * 1000);
+}, 10 * 60 * 1000);
+
+// exports.get01 = async (req, res) => {
+//   try {
+//     const { search, page = 1, limit = 200, has_remark } = req.query;
+
+//     const offset = (page - 1) * limit;
+//     const whereClause = get01Clause({
+//       search,
+//       has_remark,
+//     });
+
+//     let sql = loadSql("01_not18do_resend.sql");
+//     sql = sql
+//       .replace("__WHERE_CLAUSE__", whereClause)
+//       .replace("__LIMIT__", limit)
+//       .replace("__OFFSET__", offset);
+
+//     const [rows] = await db.query(sql);
+//     res.json({
+//       data: rows,
+//       total: countRows[0].total,
+//     });
+//   } catch (err) {
+//     console.error("error:", err);
+//     res.status(500).json({ message: "An error occurred" });
+//   }
+// };
 
 exports.get01 = async (req, res) => {
   try {
-    const { search, page = 1, limit = 200, has_remark } = req.query;
+    const { search, page = 1, limit = 200 } = req.query;
 
     const offset = (page - 1) * limit;
-    const whereClause = get01Clause({
-      search,
-      has_remark,
-    });
+    const whereClause = get01Clause({ search });
 
     let sql = loadSql("01_not18do_resend.sql");
     sql = sql
@@ -226,9 +202,11 @@ exports.get01 = async (req, res) => {
       .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
-    res.json({
-      data: rows,
-    });
+
+    const total = rows.length > 0 ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
+
+    res.json({ data, total });
   } catch (err) {
     console.error("error:", err);
     res.status(500).json({ message: "An error occurred" });

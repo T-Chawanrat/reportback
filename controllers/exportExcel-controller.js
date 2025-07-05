@@ -1,6 +1,6 @@
 const ExcelJS = require("exceljs");
-const db = require("../utils/db"); // ปรับเส้นทางตามโครงสร้างโปรเจกต์ของคุณ
-const { loadSql } = require("../utils/loadSql"); // เส้นทางไปยังฟังก์ชัน loadSql
+const db = require("../utils/db");
+const { loadSql } = require("../utils/loadSql");
 const { exportToExcel } = require("../utils/excelExport");
 
 exports.export01Excel = async (req, res) => {
@@ -25,19 +25,21 @@ exports.export01Excel = async (req, res) => {
     }
 
     const columns = [
-      { header: "วันที่กดแอพ", key: "Create_date___tm_resend", width: 15 },
-      { header: "รายละเอียด", key: "detail", width: 20 },
+      { header: "วันที่จากแอป", key: "Create_date_tm_resend", width: 15 },
+      { header: "หมายเหตุแอป", key: "detail", width: 20 },
       { header: "หมายเหตุ", key: "remark", width: 25 },
-      { header: "วันที่สร้างบิล", key: "DATETIME", width: 25 },
-      { header: "เลขที่บิล DO", key: "receive_code", width: 25 },
-      { header: "เลขที่อ้างอิง Ref", key: "reference_no", width: 25 },
+      { header: "เลขที่บิล", key: "receive_code", width: 25 },
+      { header: "Reference", key: "reference_no", width: 25 },
+      { header: "เจ้าของงาน", key: "customer_name", width: 25 },
+      { header: "ชื่อผู้รับสินค้า", key: "recipient_name", width: 25 },
       { header: "คลังปลายทาง", key: "warehouse_name", width: 25 },
+      { header: "สถานะล่าสุด", key: "Last_status_nameTH", width: 25 },
     ];
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `report_01_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "Sheet1ลองๆๆ", filename);
+    await exportToExcel(res, rows, columns, "Sheet1", filename);
   } catch (err) {
     console.error("export01Excel error:", err);
     res.status(500).json({ message: "An error occurred during export" });
