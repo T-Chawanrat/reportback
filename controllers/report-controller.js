@@ -115,7 +115,7 @@ exports.getVLedit = async (req, res) => {
     const receive_id = req.query.receive_id;
     const date = req.query.date;
 
-    const whereClause = vLeditClause({ type: "PUBLIC",  receive_id });
+    const whereClause = vLeditClause({ type: "PUBLIC", receive_id });
 
     let sql = loadSql("v_l_edit_table.sql");
 
@@ -134,59 +134,6 @@ exports.getVLedit = async (req, res) => {
     res.status(500).json({ message: "An error occurred" });
   }
 };
-
-exports.updateEdit = async (req, res) => {
-  try {
-    await db.query("CALL trantech_bi.update_edit_table();");
-    const [rows] = await db.query(
-      "SELECT * FROM trantech_bi.view_l_edit_table"
-    );
-    if (res) {
-      res.json({ data: rows });
-    } else {
-      console.log(`[${new Date().toLocaleString()}] update successful`);
-    }
-  } catch (err) {
-    if (res) {
-      res.status(500).json({ message: "An error occurred" });
-    }
-    console.error(
-      `[${new Date().toLocaleString()}] update failed:`,
-      err.message
-    );
-  }
-};
-
-setInterval(() => {
-  exports.updateEdit();
-}, 10 * 60 * 1000);
-
-// exports.get01 = async (req, res) => {
-//   try {
-//     const { search, page = 1, limit = 200, has_remark } = req.query;
-
-//     const offset = (page - 1) * limit;
-//     const whereClause = get01Clause({
-//       search,
-//       has_remark,
-//     });
-
-//     let sql = loadSql("01_not18do_resend.sql");
-//     sql = sql
-//       .replace("__WHERE_CLAUSE__", whereClause)
-//       .replace("__LIMIT__", limit)
-//       .replace("__OFFSET__", offset);
-
-//     const [rows] = await db.query(sql);
-//     res.json({
-//       data: rows,
-//       total: countRows[0].total,
-//     });
-//   } catch (err) {
-//     console.error("error:", err);
-//     res.status(500).json({ message: "An error occurred" });
-//   }
-// };
 
 exports.get01 = async (req, res) => {
   try {
