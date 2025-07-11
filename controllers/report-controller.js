@@ -113,7 +113,7 @@ exports.getVLedit = async (req, res) => {
     const { page = 1, limit = 1000 } = req.query;
     const offset = (page - 1) * limit;
     const receive_id = req.query.receive_id;
-    const date = req.query.date;
+    // const date = req.query.date;
 
     const whereClause = vLeditClause({ type: "PUBLIC", receive_id });
 
