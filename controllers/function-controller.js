@@ -26,24 +26,22 @@ setInterval(() => {
   exports.updateEdit();
 }, 10 * 60 * 1000);
 
-
 exports.updateRemark = async (req, res) => {
   const { in_receive_code, in_user_id, in_new_remark } = req.body;
 
   if (!in_receive_code || !in_user_id || !in_new_remark) {
-    return res.status(400).json({ message: 'input new remark' });
+    return res.status(400).json({ message: "input new remark" });
   }
 
   try {
-    // เรียก stored procedure
-    await db.query('CALL trantech_bi.proc_update_receive_remark(?, ?, ?)', [
+    await db.query("CALL trantech_bi.proc_update_receive_remark(?, ?, ?)", [
       in_receive_code,
       in_user_id,
       in_new_remark,
     ]);
-    res.json({ message: 'Remark updated successfully' });
+    res.json({ message: "Remark updated successfully" });
   } catch (err) {
-    console.error('Error updating remark:', err);
-    res.status(500).json({ message: 'update remark failed' });
+    console.error("Error updating remark:", err);
+    res.status(500).json({ message: "update remark failed" });
   }
 };
