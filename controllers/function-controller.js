@@ -34,7 +34,7 @@ exports.updateRemark = async (req, res) => {
   }
 
   try {
-    await db.query("CALL trantech_bi.proc_update_receive_remark(?, ?, ?)", [
+    await db.query("CALL trantech.proc_update_receive_remark(?, ?, ?)", [
       in_receive_code,
       in_user_id,
       in_new_remark,

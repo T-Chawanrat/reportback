@@ -2,9 +2,10 @@ const db = require("../utils/db");
 const { loadSql } = require("../utils/loadSql");
 
 exports.getWarehousesName = async (req, res) => {
-  try {
-    let sql = loadSql("warehouses.sql");
-    const [rows] = await db.query(sql);
+    try {
+    const { warehouse_id } = req.query;
+    let sql = loadSql("filter_warehouses.sql");
+    const [rows] = await db.query(sql, [warehouse_id, warehouse_id]);
 
     res.json({
       data: rows,
@@ -18,8 +19,9 @@ exports.getWarehousesName = async (req, res) => {
 
 exports.getCustomersName = async (req, res) => {
   try {
-    let sql = loadSql("customers.sql");
-    const [rows] = await db.query(sql);
+    const { customer_id } = req.query;
+    let sql = loadSql("filter_customers.sql");
+    const [rows] = await db.query(sql, [customer_id, customer_id]);
 
     res.json({
       data: rows,
