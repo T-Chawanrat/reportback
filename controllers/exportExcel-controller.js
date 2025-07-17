@@ -29,7 +29,7 @@ exports.export01Excel = async (req, res) => {
       { header: "เลขที่บิล", key: "receive_code", width: 25 },
       { header: "เลขที่อ้างอิง", key: "reference_no", width: 25 },
       { header: "เจ้าของงาน", key: "customer_name", width: 25 },
-      { header: "ชื่อผู้รับสินค้า", key: "recipient_name", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
       { header: "คลังปลายทาง", key: "warehouse_name", width: 25 },
       { header: "สถานะล่าสุด", key: "Last_status_nameTH", width: 25 },
     ];
@@ -66,7 +66,7 @@ exports.export02Excel = async (req, res) => {
     const columns = [
       { header: "คลังปัจจุบัน", key: "warehouse_name", width: 25 },
       { header: "เจ้าของงาน", key: "customer_name", width: 25 },
-      { header: "ชื่อผู้ส่ง", key: "recipient_name", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
       { header: "วันที่บิล", key: "receive_date", width: 25 },
       { header: "วันที่จัดส่ง", key: "delivery_date", width: 25 },
       { header: "วันที่จัดส่งใหม่", key: "resend_date", width: 25 },
