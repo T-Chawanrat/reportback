@@ -157,7 +157,7 @@ exports.get01Clause = ({ search }) => {
   return whereClause.trim();
 };
 
-exports.get02Clause = ({ search , warehouse_id , customer_id }) => {
+exports.get02Clause = ({ search, warehouse_id, customer_id }) => {
   let whereClause = `1=1`;
 
   if (search) {
@@ -170,6 +170,49 @@ exports.get02Clause = ({ search , warehouse_id , customer_id }) => {
         "%" + sanitizedSearch + "%"
       )}
     )`;
+  }
+
+  if (warehouse_id) {
+    whereClause += ` AND warehouse_id = ${mysql.escape(warehouse_id)}`;
+  }
+
+  if (customer_id) {
+    whereClause += ` AND customer_id = ${mysql.escape(customer_id)}`;
+  }
+
+  return whereClause.trim();
+};
+
+exports.get03Clause = ({
+  search,
+  remark,
+  resend_date_filter,
+  warehouse_id,
+  customer_id,
+}) => {
+  let whereClause = `1=1`;
+
+  if (search) {
+    const sanitizedSearch = search.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(receive_code, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      OR REPLACE(reference_no, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+    )`;
+  }
+
+  if (remark) {
+    const sanitizedRemark = remark.replace(/-/g, "");
+   whereClause += ` AND remark LIKE ${mysql.escape("%" + sanitizedRemark + "%")}`;
+  }
+
+  if (resend_date_filter === "has_resend") {
+    whereClause += ` AND resend_date IS NOT NULL`; 
+  } else if (resend_date_filter === "no_resend") {
+    whereClause += ` AND resend_date IS NULL`;
   }
 
   if (warehouse_id) {

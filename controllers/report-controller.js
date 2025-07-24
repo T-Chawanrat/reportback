@@ -4,9 +4,10 @@ const { loadSql } = require("../utils/loadSql");
 const {
   get01Clause,
   get02Clause,
+  get03Clause,
   vLeditClause,
 } = require("../utils/buildClause");
-const { formatDate } = require("../utils/formatDate");
+// const { formatDate } = require("../utils/formatDate");
 
 exports.getVLedit = async (req, res) => {
   try {
@@ -37,7 +38,7 @@ exports.getVLedit = async (req, res) => {
 
 exports.get01 = async (req, res) => {
   try {
-    const { search, page = 1, limit = 200 } = req.query;
+    const { search, page = 1, limit = 100 } = req.query;
 
     const offset = (page - 1) * limit;
     const whereClause = get01Clause({ search });
@@ -65,7 +66,7 @@ exports.get02 = async (req, res) => {
     const {
       search,
       page = 1,
-      limit = 200,
+      limit = 100,
       warehouse_id,
       customer_id,
     } = req.query;
@@ -74,6 +75,45 @@ exports.get02 = async (req, res) => {
     const whereClause = get02Clause({ search, warehouse_id, customer_id });
 
     let sql = loadSql("02_do_now_dc_no_remark.sql");
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    const total = rows.length > 0 ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
+
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.get03 = async (req, res) => {
+  try {
+    const {
+      search,
+      remark,
+      resend_date_filter,
+      page = 1,
+      limit = 100,
+      warehouse_id,
+      customer_id,
+    } = req.query;
+
+    const offset = (page - 1) * limit;
+    const whereClause = get03Clause({
+      search,
+      remark,
+      resend_date_filter,
+      warehouse_id,
+      customer_id,
+    });
+
+    let sql = loadSql("03_not_18_do_is_remark.sql");
     sql = sql
       .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
