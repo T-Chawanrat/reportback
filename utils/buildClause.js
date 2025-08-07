@@ -109,6 +109,24 @@ exports.lEditTableClause = ({ receive_code, date }) => {
   return whereClause.trim();
 };
 
+exports.vLeditClause = ({ type, receive_id }) => {
+  let whereClause = `1=1`;
+  if (type) {
+    whereClause += ` AND type = ${mysql.escape(type)}`;
+  }
+
+  if (receive_id) {
+    whereClause += ` AND view_l_edit_table_admin.receive_id = ${mysql.escape(receive_id)}`;
+  }
+  return whereClause.trim();
+};
+
+exports.vProductTransactionClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
 exports.get01Clause = ({ search }) => {
   let whereClause = `1=1`;
 
@@ -178,26 +196,53 @@ exports.get03Clause = ({ search, remark, resend_date_filter, warehouse_id, custo
   return whereClause.trim();
 };
 
-exports.get04Clause = ({}) => {
+exports.get04_10stdClause = ({}) => {
   let whereClause = `1=1`;
 
   return whereClause.trim();
 };
 
-exports.vLeditClause = ({ type, receive_id }) => {
-  let whereClause = `1=1`;
-  if (type) {
-    whereClause += ` AND type = ${mysql.escape(type)}`;
-  }
-
-  if (receive_id) {
-    whereClause += ` AND view_l_edit_table_admin.receive_id = ${mysql.escape(receive_id)}`;
-  }
-  return whereClause.trim();
-};
-
-exports.vProductTransactionClause = ({}) => {
+exports.get04_11stdClause = ({}) => {
   let whereClause = `1=1`;
 
   return whereClause.trim();
 };
+
+exports.get04_20outboundClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.get04_21outboundClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.get04_30inboundClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.get04_31inboundClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.get04_40whClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.get04_41whClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+
+

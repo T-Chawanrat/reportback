@@ -1,0 +1,4 @@
+SELECT *, COUNT(*) OVER() AS total
+FROM trantech_bi.v04_41_detail_w6_on_truck_15_wh_wh
+WHERE __WHERE_CLAUSE__
+LIMIT __LIMIT__ OFFSET __OFFSET__
