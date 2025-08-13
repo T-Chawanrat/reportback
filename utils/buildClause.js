@@ -196,15 +196,24 @@ exports.get03Clause = ({ search, remark, resend_date_filter, warehouse_id, custo
   return whereClause.trim();
 };
 
-exports.get04_10stdClause = ({}) => {
+exports.get04_10stdClause = ({ statusFilter }) => {
   let whereClause = `1=1`;
+
+  if (statusFilter === "overtime") {
+    whereClause += ` AND status_message_web COLLATE utf8mb4_unicode_ci = 'เกินเวลา'`;
+  } else if (statusFilter === "not_yet") {
+    whereClause += ` AND status_message_web COLLATE utf8mb4_unicode_ci = 'ยังไม่ถึง'`;
+  }
 
   return whereClause.trim();
 };
 
-exports.get04_11stdClause = ({}) => {
+exports.get04_11stdClause = ({ truck_load_id }) => {
   let whereClause = `1=1`;
 
+  if (truck_load_id) {
+    whereClause += ` AND v04_11_detail_w6_on_truck_std.truck_load_id = ${mysql.escape(truck_load_id)}`;
+  }
   return whereClause.trim();
 };
 
@@ -243,6 +252,3 @@ exports.get04_41whClause = ({}) => {
 
   return whereClause.trim();
 };
-
-
-

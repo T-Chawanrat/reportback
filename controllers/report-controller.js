@@ -42,7 +42,7 @@ exports.getVLedit = async (req, res) => {
 
 exports.get01 = async (req, res) => {
   try {
-    const { search, page = 1, limit = 100 } = req.query;
+    const { search, page = 1, limit = 1000 } = req.query;
 
     const offset = (page - 1) * limit;
     const whereClause = get01Clause({ search });
@@ -64,7 +64,7 @@ exports.get01 = async (req, res) => {
 
 exports.get02 = async (req, res) => {
   try {
-    const { search, page = 1, limit = 100, warehouse_id, customer_id } = req.query;
+    const { search, page = 1, limit = 1000, warehouse_id, customer_id } = req.query;
 
     const offset = (page - 1) * limit;
     const whereClause = get02Clause({ search, warehouse_id, customer_id });
@@ -91,7 +91,7 @@ exports.get03 = async (req, res) => {
       remark,
       resend_date_filter,
       page = 1,
-      limit = 100,
+      limit = 1000,
       warehouse_id,
       customer_id,
       sort_by,
@@ -132,31 +132,45 @@ exports.get03 = async (req, res) => {
 
 exports.get04std = async (req, res) => {
   try {
-    const { page = 1, limit = 100 } = req.query;
+    const { page = 1, limit = 1000, statusFilter } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause1 = get04_10stdClause({});
-    const whereClause2 = get04_11stdClause({});
+    const whereClause = get04_10stdClause({ statusFilter });
 
-    let sql1 = loadSql("04_10_tk_w6_on_truck_std.sql")
-      .replace("__WHERE_CLAUSE__", whereClause1)
+    let sql = loadSql("04_10_tk_w6_on_truck_std.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
 
-    let sql2 = loadSql("04_11_detail_w6_on_truck_std.sql")
-      .replace("__WHERE_CLAUSE__", whereClause2)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    const [rows] = await db.query(sql);
 
-    const [[rows1], [rows2]] = await Promise.all([db.query(sql1), db.query(sql2)]);
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
 
-    const total1 = rows1.length > 0 && rows1[0].total ? rows1[0].total : 0;
-    const data1 = rows1.map(({ total, ...rest }) => rest);
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
 
-    const total2 = rows2.length > 0 && rows2[0].total ? rows2[0].total : 0;
-    const data2 = rows2.map(({ total, ...rest }) => rest);
+exports.get04detail = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+    const offset = (page - 1) * limit;
+    const { truck_load_id } = req.params;
 
-    res.json({ data1, total1, data2, total2 });
+    const whereClause = get04_11stdClause({ truck_load_id });
+
+    let sql = loadSql("04_11_detail_w6_on_truck_std.sql");
+
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    res.json({
+      data: rows,
+    });
   } catch (err) {
     console.error("error:", err);
     res.status(500).json({ message: "An error occurred" });
@@ -165,7 +179,7 @@ exports.get04std = async (req, res) => {
 
 exports.get04outbound = async (req, res) => {
   try {
-    const { page = 1, limit = 100 } = req.query;
+    const { page = 1, limit = 1000 } = req.query;
     const offset = (page - 1) * limit;
 
     const whereClause1 = get04_20outboundClause({});
@@ -198,7 +212,7 @@ exports.get04outbound = async (req, res) => {
 
 exports.get04inbound = async (req, res) => {
   try {
-    const { page = 1, limit = 100 } = req.query;
+    const { page = 1, limit = 1000 } = req.query;
     const offset = (page - 1) * limit;
 
     const whereClause1 = get04_30inboundClause({});
@@ -231,7 +245,7 @@ exports.get04inbound = async (req, res) => {
 
 exports.get04wh = async (req, res) => {
   try {
-    const { page = 1, limit = 100 } = req.query;
+    const { page = 1, limit = 1000 } = req.query;
     const offset = (page - 1) * limit;
 
     const whereClause1 = get04_40whClause({});
