@@ -154,7 +154,7 @@ exports.get04std = async (req, res) => {
   }
 };
 
-exports.get04detail = async (req, res) => {
+exports.get04stdDetail = async (req, res) => {
   try {
     const { page = 1, limit = 1000 } = req.query;
     const offset = (page - 1) * limit;
@@ -179,31 +179,45 @@ exports.get04detail = async (req, res) => {
 
 exports.get04outbound = async (req, res) => {
   try {
-    const { page = 1, limit = 1000 } = req.query;
+    const { page = 1, limit = 1000, statusFilter } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause1 = get04_20outboundClause({});
-    const whereClause2 = get04_21outboundClause({});
+    const whereClause = get04_20outboundClause({ statusFilter });
 
-    let sql1 = loadSql("04_20_tk_w6_on_truck_15_outbound.sql")
-      .replace("__WHERE_CLAUSE__", whereClause1)
+    let sql = loadSql("04_20_tk_w6_on_truck_15_outbound.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
 
-    let sql2 = loadSql("04_21_detail_w6_on_truck_15_outbound.sql")
-      .replace("__WHERE_CLAUSE__", whereClause2)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    const [rows] = await db.query(sql);
 
-    const [[rows1], [rows2]] = await Promise.all([db.query(sql1), db.query(sql2)]);
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
 
-    const total1 = rows1.length > 0 && rows1[0].total ? rows1[0].total : 0;
-    const data1 = rows1.map(({ total, ...rest }) => rest);
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
 
-    const total2 = rows2.length > 0 && rows2[0].total ? rows2[0].total : 0;
-    const data2 = rows2.map(({ total, ...rest }) => rest);
+exports.get04outboundDetail = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+    const offset = (page - 1) * limit;
+    const { truck_load_id } = req.params;
 
-    res.json({ data1, total1, data2, total2 });
+    const whereClause = get04_21outboundClause({ truck_load_id });
+
+    let sql = loadSql("04_21_detail_w6_on_truck_15_outbound.sql");
+
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    res.json({
+      data: rows,
+    });
   } catch (err) {
     console.error("error:", err);
     res.status(500).json({ message: "An error occurred" });
@@ -212,31 +226,45 @@ exports.get04outbound = async (req, res) => {
 
 exports.get04inbound = async (req, res) => {
   try {
-    const { page = 1, limit = 1000 } = req.query;
+    const { page = 1, limit = 1000, statusFilter } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause1 = get04_30inboundClause({});
-    const whereClause2 = get04_31inboundClause({});
+    const whereClause = get04_30inboundClause({ statusFilter });
 
-    let sql1 = loadSql("04_30_tk_w6_on_truck_15_inbound.sql")
-      .replace("__WHERE_CLAUSE__", whereClause1)
+    let sql = loadSql("04_30_tk_w6_on_truck_15_inbound.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
 
-    let sql2 = loadSql("04_31_detail_w6_on_truck_15_inbound.sql")
-      .replace("__WHERE_CLAUSE__", whereClause2)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    const [rows] = await db.query(sql);
 
-    const [[rows1], [rows2]] = await Promise.all([db.query(sql1), db.query(sql2)]);
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
 
-    const total1 = rows1.length > 0 && rows1[0].total ? rows1[0].total : 0;
-    const data1 = rows1.map(({ total, ...rest }) => rest);
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
 
-    const total2 = rows2.length > 0 && rows2[0].total ? rows2[0].total : 0;
-    const data2 = rows2.map(({ total, ...rest }) => rest);
+exports.get04inboundDetail = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+    const offset = (page - 1) * limit;
+    const { truck_load_id } = req.params;
 
-    res.json({ data1, total1, data2, total2 });
+    const whereClause = get04_31inboundClause({ truck_load_id });
+
+    let sql = loadSql("04_31_detail_w6_on_truck_15_inbound.sql");
+
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    res.json({
+      data: rows,
+    });
   } catch (err) {
     console.error("error:", err);
     res.status(500).json({ message: "An error occurred" });
@@ -245,31 +273,45 @@ exports.get04inbound = async (req, res) => {
 
 exports.get04wh = async (req, res) => {
   try {
-    const { page = 1, limit = 1000 } = req.query;
+    const { page = 1, limit = 1000, statusFilter } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause1 = get04_40whClause({});
-    const whereClause2 = get04_41whClause({});
+    const whereClause = get04_40whClause({ statusFilter });
 
-    let sql1 = loadSql("04_40_tk_w6_on_truck_15_wh_wh.sql")
-      .replace("__WHERE_CLAUSE__", whereClause1)
+    let sql = loadSql("04_40_tk_w6_on_truck_15_wh_wh.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
 
-    let sql2 = loadSql("04_41_detail_w6_on_truck_15_wh_wh.sql")
-      .replace("__WHERE_CLAUSE__", whereClause2)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    const [rows] = await db.query(sql);
 
-    const [[rows1], [rows2]] = await Promise.all([db.query(sql1), db.query(sql2)]);
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
 
-    const total1 = rows1.length > 0 && rows1[0].total ? rows1[0].total : 0;
-    const data1 = rows1.map(({ total, ...rest }) => rest);
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
 
-    const total2 = rows2.length > 0 && rows2[0].total ? rows2[0].total : 0;
-    const data2 = rows2.map(({ total, ...rest }) => rest);
+exports.get04whDetail = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+    const offset = (page - 1) * limit;
+    const { truck_load_id } = req.params;
 
-    res.json({ data1, total1, data2, total2 });
+    const whereClause = get04_41whClause({ truck_load_id });
+
+    let sql = loadSql("04_41_detail_w6_on_truck_15_wh_wh.sql");
+
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    res.json({
+      data: rows,
+    });
   } catch (err) {
     console.error("error:", err);
     res.status(500).json({ message: "An error occurred" });
