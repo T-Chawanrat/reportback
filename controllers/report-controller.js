@@ -1,5 +1,4 @@
 const db = require("../utils/db");
-const mysql = require("mysql2");
 const { loadSql } = require("../utils/loadSql");
 const {
   get01Clause,
@@ -14,6 +13,8 @@ const {
   get04_40whClause,
   get04_41whClause,
   vLeditClause,
+  get05_10whClause,
+  get05_11whClause,
 } = require("../utils/buildClause");
 // const { formatDate } = require("../utils/formatDate");
 
@@ -304,6 +305,52 @@ exports.get04whDetail = async (req, res) => {
     const whereClause = get04_41whClause({ truck_load_id });
 
     let sql = loadSql("04_41_detail_w6_on_truck_15_wh_wh.sql");
+
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    res.json({
+      data: rows,
+    });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.get05 = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = get05_10whClause({});
+
+    let sql = loadSql("05_10_tk_w6_on_truck_std.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
+
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.get05Detail = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = get05_11whClause({});
+
+    let sql = loadSql("05_11_detail_w6_on_truck_std.sql");
 
     sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
 

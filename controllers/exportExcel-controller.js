@@ -1,4 +1,3 @@
-const ExcelJS = require("exceljs");
 const db = require("../utils/db");
 const { loadSql } = require("../utils/loadSql");
 const { exportToExcel } = require("../utils/excelExport");

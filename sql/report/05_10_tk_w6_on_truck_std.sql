@@ -1,4 +1,4 @@
 SELECT *, COUNT(*) OVER() AS total
-FROM trantech_bi.v04_31_detail_w6_on_truck_15_inbound
+FROM trantech_bi.v05_10_tk_w6_on_truck_std
 WHERE __WHERE_CLAUSE__
 LIMIT __LIMIT__ OFFSET __OFFSET__
