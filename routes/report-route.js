@@ -30,6 +30,6 @@ router.get("/inbound/:truck_load_id", get04inboundDetail);
 router.get("/04wh", get04wh);
 router.get("/wh/:truck_load_id", get04whDetail);
 router.get("/05", get05);
-router.get("/05detail", get05Detail);
+router.get("/05detail/:truck_load_id", get05Detail);
 
 module.exports = router;

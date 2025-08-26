@@ -326,7 +326,8 @@ exports.get05 = async (req, res) => {
 
     const whereClause = get05_10whClause({});
 
-    let sql = loadSql("05_10_tk_w6_on_truck_std.sql")
+    let sql = loadSql("05_11_detail_w6_on_truck_std.sql")
+    // let sql = loadSql("05_10_tk_w6_on_truck_std.sql")
       .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
@@ -347,8 +348,9 @@ exports.get05Detail = async (req, res) => {
   try {
     const { page = 1, limit = 1000 } = req.query;
     const offset = (page - 1) * limit;
+    const { truck_load_id } = req.params;
 
-    const whereClause = get05_11whClause({});
+    const whereClause = get05_11whClause({ truck_load_id });
 
     let sql = loadSql("05_11_detail_w6_on_truck_std.sql");
 
