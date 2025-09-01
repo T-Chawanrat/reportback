@@ -1,0 +1,4 @@
+SELECT *, COUNT(*) OVER() AS total
+FROM trantech_bi.view_05_n09n11
+WHERE __WHERE_CLAUSE__
+LIMIT __LIMIT__ OFFSET __OFFSET__

@@ -168,18 +168,48 @@ exports.get04_41whClause = ({ truck_load_id }) => {
   return whereClause.trim();
 };
 
-exports.get05_10whClause = ({}) => {
+exports.get05_09Clause = ({ warehouse_id }) => {
   let whereClause = `1=1`;
 
-  return whereClause.trim();
-};
-
-exports.get05_11whClause = ({truck_load_id}) => {
-  let whereClause = `1=1`;
-
-    if (truck_load_id) {
-    whereClause += ` AND v05_11_detail_w6_on_truck_std.truck_load_id = ${mysql.escape(truck_load_id)}`;
+  if (warehouse_id) {
+    whereClause += ` AND warehouse_id = ${mysql.escape(warehouse_id)}`;
   }
 
   return whereClause.trim();
 };
+
+exports.get05_11Clause = ({ warehouse_id }) => {
+  let whereClause = `1=1`;
+
+  if (warehouse_id) {
+    whereClause += ` AND warehouse_id = ${mysql.escape(warehouse_id)}`;
+  }
+
+  return whereClause.trim();
+};
+
+exports.get05_n09n11Clause = ({ warehouse_id }) => {
+  let whereClause = `1=1`;
+
+  if (warehouse_id) {
+    whereClause += ` AND warehouse_id = ${mysql.escape(warehouse_id)}`;
+  }
+
+  return whereClause.trim();
+};
+
+// exports.get05_10whClause = ({}) => {
+//   let whereClause = `1=1`;
+
+//   return whereClause.trim();
+// };
+
+// exports.get05_11whClause = ({truck_load_id}) => {
+//   let whereClause = `1=1`;
+
+//     if (truck_load_id) {
+//     whereClause += ` AND v05_11_detail_w6_on_truck_std.truck_load_id = ${mysql.escape(truck_load_id)}`;
+//   }
+
+//   return whereClause.trim();
+// };

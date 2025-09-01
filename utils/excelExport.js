@@ -16,7 +16,7 @@ async function exportToExcel(res, rows, columns, sheetName = 'Sheet1', fileName 
   // กำหนด header style
   const headerStyle = {
     font: { bold: true, color: { argb: 'FFFFFF' } },
-    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '4472C4' } },
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '465FFF' } },
     border: {
       top: { style: 'thin' },
       left: { style: 'thin' },

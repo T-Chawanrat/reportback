@@ -13,8 +13,9 @@ const {
   get04outboundDetail,
   get04inboundDetail,
   get04whDetail,
-  get05,
-  get05Detail,
+  get05_09,
+  get05_11,
+  get05_n09n11
 } = require("../controllers/report-controller");
 
 router.get("/vledit", getVLedit);
@@ -29,7 +30,10 @@ router.get("/04inbound", get04inbound);
 router.get("/inbound/:truck_load_id", get04inboundDetail);
 router.get("/04wh", get04wh);
 router.get("/wh/:truck_load_id", get04whDetail);
-router.get("/05", get05);
-router.get("/05detail/:truck_load_id", get05Detail);
+// router.get("/05", get05);
+// router.get("/05detail/:truck_load_id", get05Detail);
+router.get("/05_09", get05_09);
+router.get("/05_11", get05_11);
+router.get("/05_n09n11", get05_n09n11);
 
 module.exports = router;

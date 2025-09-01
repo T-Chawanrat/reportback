@@ -10,10 +10,7 @@ exports.export01Excel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("01_not18do_resend.sql");
-    sql = sql
-      .replace("__WHERE_CLAUSE__", whereClause)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -51,10 +48,7 @@ exports.export02Excel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("02_do_now_dc_no_remark.sql");
-    sql = sql
-      .replace("__WHERE_CLAUSE__", whereClause)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -93,10 +87,7 @@ exports.export03Excel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("03_not_18_do_is_remark.sql");
-    sql = sql
-      .replace("__WHERE_CLAUSE__", whereClause)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -125,6 +116,134 @@ exports.export03Excel = async (req, res) => {
     await exportToExcel(res, rows, columns, "Sheet1", filename);
   } catch (err) {
     console.error("Export Report Product Warehouse error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};
+
+const ExcelJS = require("exceljs");
+
+exports.exportMultiSheetV05Excel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    // 1. โหลด SQL ทั้ง 3 ไฟล์
+    let sql1 = loadSql("05_09.sql");
+    let sql2 = loadSql("05_11.sql");
+    let sql3 = loadSql("05_n09n11.sql");
+
+    const whereClause = "1=1";
+
+    sql1 = sql1.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql2 = sql2.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql3 = sql3.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    // 2. ดึงข้อมูลจากแต่ละ SQL
+    const [rows1] = await db.query(sql1);
+    const [rows2] = await db.query(sql2);
+    const [rows3] = await db.query(sql3);
+
+    // 3. ตรวจสอบว่ามีข้อมูลหรือไม่
+    if (rows1.length === 0 && rows2.length === 0 && rows3.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    // 4. ตั้งค่า Columns สำหรับแต่ละ Sheet
+    const columns1 = [
+      { header: "คลังปัจจุบัน", key: "warehouse_name", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      { header: "วันที่บิล", key: "tm_product_trucks_created_date", width: 25 },
+      { header: "ชื่อผู้รับ", key: "username", width: 25 },
+      { header: "เลขที่บิล", key: "receive_code", width: 25 },
+      { header: "หมายเลขกล่อง", key: "serial_no", width: 25 },
+      { header: "ตำบล", key: "username", width: 25 },
+      { header: "อำเภอ", key: "username", width: 25 },
+      { header: "เวลาส่ง", key: "deadline_time", width: 25 },
+      { header: "เกินเวลา", key: "time_remaining_text", width: 25 },
+      { header: "สถานะ", key: "status_message", width: 25 },
+    ];
+
+    const columns2 = [
+      { header: "คลังปัจจุบัน", key: "warehouse_name", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      { header: "วันที่บิล", key: "tm_product_trucks_created_date", width: 25 },
+      { header: "ชื่อผู้รับ", key: "username", width: 25 },
+      { header: "เลขที่บิล", key: "receive_code", width: 25 },
+      { header: "หมายเลขกล่อง", key: "serial_no", width: 25 },
+      { header: "ตำบล", key: "username", width: 25 },
+      { header: "อำเภอ", key: "username", width: 25 },
+      { header: "เวลาคืนคลัง", key: "deadline_time", width: 25 },
+      { header: "เกินเวลา", key: "time_remaining_text", width: 25 },
+      { header: "สถานะ", key: "status_message", width: 25 },
+    ];
+
+    const columns3 = [
+      { header: "คลังปัจจุบัน", key: "warehouse_name", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      { header: "วันที่บิล", key: "tm_product_trucks_created_date", width: 25 },
+      { header: "ชื่อผู้รับ", key: "username", width: 25 },
+      { header: "เลขที่บิล", key: "receive_code", width: 25 },
+      { header: "หมายเลขกล่อง", key: "serial_no", width: 25 },
+      { header: "ตำบล", key: "username", width: 25 },
+      { header: "อำเภอ", key: "username", width: 25 },
+      { header: "ลิมิต1ชม.", key: "deadline_time", width: 25 },
+      { header: "เกินเวลา", key: "time_remaining_text", width: 25 },
+      { header: "สถานะ", key: "status_message", width: 25 },
+    ];
+
+    // 5. สร้าง Excel Workbook
+    const workbook = new ExcelJS.Workbook();
+
+    // 6. เพิ่ม Sheet 1
+    const sheet1 = workbook.addWorksheet("กำลังนำจ่าย");
+    sheet1.columns = columns1;
+    sheet1.addRows(rows1);
+
+    // เพิ่มสไตล์ให้หัวคอลัมน์ใน Sheet 1
+    const headerRow1 = sheet1.getRow(1);
+    headerRow1.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } }; 
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+    });
+
+    // 7. เพิ่ม Sheet 2
+    const sheet2 = workbook.addWorksheet("ไม่คืนคลัง");
+    sheet2.columns = columns2;
+    sheet2.addRows(rows2);
+
+    // เพิ่มสไตล์ให้หัวคอลัมน์ใน Sheet 2
+    const headerRow2 = sheet2.getRow(1);
+    headerRow2.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } }; 
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+    });
+
+    // 8. เพิ่ม Sheet 3
+    const sheet3 = workbook.addWorksheet("อื่นๆ");
+    sheet3.columns = columns3;
+    sheet3.addRows(rows3);
+
+    // เพิ่มสไตล์ให้หัวคอลัมน์ใน Sheet 3
+    const headerRow3 = sheet3.getRow(1);
+    headerRow3.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } };
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+    });
+
+    // 9. สร้างชื่อไฟล์และส่งกลับไปยัง client
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `multi_sheet_export_${timestamp}.xlsx`;
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error("Export Multi-Sheet Excel error:", err);
     res.status(500).json({ message: "An error occurred during export" });
   }
 };
