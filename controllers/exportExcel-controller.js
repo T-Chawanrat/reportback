@@ -127,7 +127,6 @@ exports.exportMultiSheetV05Excel = async (req, res) => {
     const limit = 100000;
     const offset = 0;
 
-    // 1. โหลด SQL ทั้ง 3 ไฟล์
     let sql1 = loadSql("05_09.sql");
     let sql2 = loadSql("05_11.sql");
     let sql3 = loadSql("05_n09n11.sql");
@@ -138,17 +137,14 @@ exports.exportMultiSheetV05Excel = async (req, res) => {
     sql2 = sql2.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
     sql3 = sql3.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
 
-    // 2. ดึงข้อมูลจากแต่ละ SQL
     const [rows1] = await db.query(sql1);
     const [rows2] = await db.query(sql2);
     const [rows3] = await db.query(sql3);
 
-    // 3. ตรวจสอบว่ามีข้อมูลหรือไม่
     if (rows1.length === 0 && rows2.length === 0 && rows3.length === 0) {
       return res.status(404).json({ message: "No data found" });
     }
 
-    // 4. ตั้งค่า Columns สำหรับแต่ละ Sheet
     const columns1 = [
       { header: "คลังปัจจุบัน", key: "warehouse_name", width: 25 },
       { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
@@ -191,41 +187,34 @@ exports.exportMultiSheetV05Excel = async (req, res) => {
       { header: "สถานะ", key: "status_message", width: 25 },
     ];
 
-    // 5. สร้าง Excel Workbook
     const workbook = new ExcelJS.Workbook();
 
-    // 6. เพิ่ม Sheet 1
     const sheet1 = workbook.addWorksheet("กำลังนำจ่าย");
     sheet1.columns = columns1;
     sheet1.addRows(rows1);
 
-    // เพิ่มสไตล์ให้หัวคอลัมน์ใน Sheet 1
     const headerRow1 = sheet1.getRow(1);
     headerRow1.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFF" } };
-      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } }; 
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } };
       cell.alignment = { vertical: "middle", horizontal: "center" };
     });
 
-    // 7. เพิ่ม Sheet 2
     const sheet2 = workbook.addWorksheet("ไม่คืนคลัง");
     sheet2.columns = columns2;
     sheet2.addRows(rows2);
 
-    // เพิ่มสไตล์ให้หัวคอลัมน์ใน Sheet 2
     const headerRow2 = sheet2.getRow(1);
     headerRow2.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFF" } };
-      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } }; 
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } };
       cell.alignment = { vertical: "middle", horizontal: "center" };
     });
 
-    // 8. เพิ่ม Sheet 3
     const sheet3 = workbook.addWorksheet("อื่นๆ");
     sheet3.columns = columns3;
     sheet3.addRows(rows3);
 
-    // เพิ่มสไตล์ให้หัวคอลัมน์ใน Sheet 3
     const headerRow3 = sheet3.getRow(1);
     headerRow3.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFF" } };
@@ -233,7 +222,6 @@ exports.exportMultiSheetV05Excel = async (req, res) => {
       cell.alignment = { vertical: "middle", horizontal: "center" };
     });
 
-    // 9. สร้างชื่อไฟล์และส่งกลับไปยัง client
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `multi_sheet_export_${timestamp}.xlsx`;
 
