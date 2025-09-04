@@ -323,10 +323,10 @@ model audit_report_tk {
   license_plate    String?                         @db.VarChar(255)
   name_th          String?                         @db.VarChar(255)
   customer_name    String?                         @db.VarChar(255)
-  count4            String?                         @map("4_count") @db.VarChar(3)
+  count4           String?                         @map("4_count") @db.VarChar(3)
   count5           String?                         @map("5_count") @db.VarChar(3)
-  count11            String?                         @map("11_count") @db.VarChar(3)
-  count12            String?                         @map("12_count") @db.VarChar(3)
+  count11          String?                         @map("11_count") @db.VarChar(3)
+  count12          String?                         @map("12_count") @db.VarChar(3)
   serial_id        Int
   cost             Decimal?                        @db.Decimal(32, 2)
 
@@ -385,8 +385,6 @@ model dc_schedule {
   Saturday       String? @db.VarChar(20)
   Sunday         String? @db.VarChar(20)
 
-  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
-  // เข้ากี่วัน Int? @map("เข้ากี่วัน")
   @@index([province], map: "idx_province")
   @@index([tambon_id], map: "idx_tambon_id")
   @@index([warehouse_id], map: "idx_warehouse_id")
@@ -663,7 +661,6 @@ model mm_cost_other {
   is_deleted mm_cost_other_is_deleted? @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_cost_truck {
   cost_truck_id Int      @id @default(autoincrement())
   customer_id   Int?
@@ -747,7 +744,6 @@ model mm_geographies {
   is_deleted mm_geographies_is_deleted? @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_holiday {
   id           Int                   @id @default(autoincrement())
   fisyear      String                @db.VarChar(4)
@@ -835,7 +831,6 @@ model mm_line_message {
   @@index([user_id], map: "user_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_package_business {
   id                        Int                                     @id @default(autoincrement())
   package_detail_code       String?                                 @db.VarChar(255)
@@ -863,7 +858,6 @@ model mm_package_business {
   @@index([package_id], map: "package_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_package_businessxxx {
   id                        Int                                        @id @default(autoincrement())
   package_detail_code       String?                                    @db.VarChar(255)
@@ -891,7 +885,6 @@ model mm_package_businessxxx {
   @@index([package_id], map: "package_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_package_details {
   package_detail_id  Int                                    @id @default(autoincrement())
   package_id         Int?
@@ -914,7 +907,6 @@ model mm_package_details {
   is_vat             mm_package_details_is_vat?             @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_package_express {
   id                        Int                            @id @default(autoincrement())
   package_detail_code       String?                        @db.VarChar(255)
@@ -936,7 +928,6 @@ model mm_package_express {
   is_document_return        String?                        @db.VarChar(1)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_package_express_settings {
   id                        Int                                     @id @default(autoincrement())
   code                      String?                                 @db.VarChar(255)
@@ -952,7 +943,6 @@ model mm_package_express_settings {
   cost_difference_warehouse Decimal?                                @db.Decimal(32, 16)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model mm_packages {
   package_id         Int                             @id @default(autoincrement())
   package_code       String?                         @db.VarChar(30)
@@ -1027,7 +1017,7 @@ model mm_reason_sends {
   reason_id  Int                         @id @default(autoincrement())
   detail     String?                     @db.VarChar(200)
   is_deleted mm_reason_sends_is_deleted? @default(N)
-  resends    tm_resends[]  @relation("ReasonToResends")
+  resends    tm_resends[]                @relation("ReasonToResends")
 }
 
 model mm_receive_types {
@@ -1187,7 +1177,7 @@ model mm_shipper_types {
   is_deleted mm_shipper_types_is_deleted? @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mm_shippers {
   shipper_id      Int                     @id @default(autoincrement())
   shipper_code    String?                 @db.VarChar(50)
@@ -1220,7 +1210,7 @@ model mm_tambon {
   tambon_paid mm_tambon_tambon_paid? @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mm_tambon_days {
   id            Int                        @default(autoincrement())
   tambon_id     Int
@@ -1239,7 +1229,7 @@ model mm_tambon_days {
   @@index([tambon_id], map: "tambon_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mm_tambon_days_2024_11_07 {
   id            Int                                   @default(autoincrement())
   tambon_id     Int
@@ -1266,7 +1256,7 @@ model mm_tambon_days_bak {
   dayNo     String? @db.VarChar(10)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mm_tambon_days_old_2024_08_06_ {
   id            Int                                        @default(autoincrement())
   tambon_id     Int
@@ -1303,7 +1293,7 @@ model mm_truck_types {
   @@index([is_deleted], map: "mm_truck_types_is_deleted_IDX")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mm_trucks {
   id                            Int                   @id @default(autoincrement())
   truck_number                  String?               @db.VarChar(200)
@@ -1336,7 +1326,7 @@ model mm_trucks {
   @@index([province_id], map: "province_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mm_units {
   unit_id        Int                  @id @default(autoincrement())
   unit_name      String?              @db.VarChar(255)
@@ -1376,7 +1366,7 @@ model mm_warehouse_mapping_old {
   tambon_id    Int?
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model mm_warehouse_num_days {
   id               Int                               @id @default(autoincrement())
   src_warehouse_id Int?
@@ -1545,7 +1535,7 @@ model projectstatus {
   projects_projects_projectstatusToprojectstatus projects[] @relation("projects_projectstatusToprojectstatus")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model r_from_customer {
   id                 Int       @id @default(autoincrement())
   from_customer_code String?   @db.VarChar(20)
@@ -1559,7 +1549,7 @@ model r_from_customer {
   document2          String?   @db.VarChar(200)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model r_from_customer_details {
   id               Int     @id @default(autoincrement())
   from_customer_id Int?
@@ -1775,7 +1765,7 @@ model temp_receive_last {
   @@index([data_yearmonth], map: "idx_data_yearmonth")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model temp_test {
   receive_code        String? @db.VarChar(50)
   receive_business_id String? @db.VarChar(50)
@@ -1859,7 +1849,7 @@ model tm_avi_ampor_pay {
   @@index([id, receive_detail_id, receive_id], map: "id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model tm_bill_details {
   bill_detail_id Int                     @id @default(autoincrement())
   bill_id        Int?
@@ -1867,7 +1857,7 @@ model tm_bill_details {
   is_pay         tm_bill_details_is_pay? @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model tm_bills {
   bill_id      Int                    @id @default(autoincrement())
   bill_code    String?                @db.VarChar(100)
@@ -1877,7 +1867,7 @@ model tm_bills {
   is_deleted   tm_bills_is_deleted?   @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model tm_book_details {
   book_detail_id Int                     @id @default(autoincrement())
   truck_id       Int?
@@ -1900,7 +1890,7 @@ model tm_book_receives {
   book_id    Int?
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model tm_books {
   book_id            Int                          @id @default(autoincrement())
   book_code          String?                      @db.VarChar(20)
@@ -1938,7 +1928,7 @@ model tm_books {
   @@index([shipper_id], map: "idx_shipper_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model tm_budget_transaction_customers {
   transaction_id   Int                                         @id @default(autoincrement())
   transaction_type String?                                     @db.VarChar(200)
@@ -1950,7 +1940,7 @@ model tm_budget_transaction_customers {
   is_pay           tm_budget_transaction_customers_is_pay?     @default(N)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model tm_budget_transaction_warehouses {
   transaction_id   Int      @id
   transaction_type String?  @db.VarChar(200)
@@ -1959,7 +1949,7 @@ model tm_budget_transaction_warehouses {
   warehouse_id     Int?
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+
 model tm_budget_transactions {
   transaction_id   Int      @id
   transaction_type String?  @db.VarChar(200)
@@ -3623,18 +3613,18 @@ model tm_resend_images {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model tm_resends {
-  resend_id     Int       @id @default(autoincrement())
+  resend_id     Int              @id @default(autoincrement())
   reason_id     Int?
   reason        mm_reason_sends? @relation("ReasonToResends", fields: [reason_id], references: [reason_id])
-  serial_no     String?   @db.VarChar(30)
-  serial_id     String?   @db.VarChar(64)
-  create_date   DateTime? @default(now()) @db.DateTime(0)
+  serial_no     String?          @db.VarChar(30)
+  serial_id     String?          @db.VarChar(64)
+  create_date   DateTime?        @default(now()) @db.DateTime(0)
   user_truck_id Int?
-  resend_date   DateTime? @db.Date
-  success       String?   @default("N") @db.Char(1)
-  longitude     String?   @db.VarChar(20)
-  latitude      String?   @db.VarChar(20)
-  success_18_14 String?   @db.VarChar(1)
+  resend_date   DateTime?        @db.Date
+  success       String?          @default("N") @db.Char(1)
+  longitude     String?          @db.VarChar(20)
+  latitude      String?          @db.VarChar(20)
+  success_18_14 String?          @db.VarChar(1)
 
   @@index([resend_id], map: "id")
 }
@@ -5656,18 +5646,18 @@ enum mm_tambon_is_deleted {
 }
 
 enum mm_tambon_days_count {
-PLACEHOLDER
+  PLACEHOLDER
 }
 
 enum mm_tambon_days_2024_11_07_count {
+  PLACEHOLDER
 
-PLACEHOLDER
   @@map("mm_tambon_days_2024-11-07_count")
 }
 
 enum mm_tambon_days_old_2024_08_06__count {
+  PLACEHOLDER
 
-PLACEHOLDER
   @@map("mm_tambon_days_old(2024-08-06)_count")
 }
 
@@ -6300,7 +6290,7 @@ enum mm_package_businessxxx_is_document_return {
 }
 
 enum tm_log_activity_tel_call_type {
- PLACEHOLDER
+  PLACEHOLDER
 }
 
 enum tm_trucks_is_arrived {
@@ -6467,7 +6457,7 @@ enum tm_log_activity_tel_type {
 }
 
 enum acc_income_daily_payment_type_id {
-PLACEHOLDER
+  PLACEHOLDER
 }
 
 enum tm_receive_walkins_is_invoices {
@@ -6580,7 +6570,7 @@ enum tm_receives_copy2_is_pickup_customer {
 }
 
 enum um_employees_levelid {
-PLACEHOLDER
+  PLACEHOLDER
 }
 
 enum tm_receive_import_head_is_pickup_shipper {

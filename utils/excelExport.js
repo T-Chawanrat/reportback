@@ -2,14 +2,13 @@ const ExcelJS = require("exceljs");
 
 /**
  * @param {object} res
- * @param {array} rows
+ * @param {array|object} rows - array ของ row หรือ array ของ { sheetName, rows }
  * @param {array} columns
- * @param {string} sheetName
+ * @param {string|null} sheetName
  * @param {string} fileName
  */
 async function exportToExcel(res, rows, columns, sheetName = "Sheet1", fileName = "data.xlsx") {
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet(sheetName);
 
   const headerStyle = {
     font: { bold: true, color: { argb: "FFFFFF" } },
@@ -22,38 +21,41 @@ async function exportToExcel(res, rows, columns, sheetName = "Sheet1", fileName 
     },
   };
 
-  if (columns && columns.length > 0) {
-    worksheet.columns = columns;
-  } else if (rows.length > 0) {
-    worksheet.columns = Object.keys(rows[0]).map((key) => ({
-      header: key,
-      key: key,
-      width: 20,
-    }));
-  }
+  const isMultiSheet = Array.isArray(rows) && rows.every((sheet) => sheet.sheetName && Array.isArray(sheet.rows));
+  const sheetConfigs = isMultiSheet ? rows : [{ sheetName, rows }];
 
-  rows.forEach((row) => {
-    const rowData = { ...row };
-    Object.keys(rowData).forEach((key) => {
-      if (rowData[key] instanceof Date) {
-        rowData[key] = rowData[key].toLocaleString("th-TH");
-      }
+  sheetConfigs.forEach(({ sheetName, rows }) => {
+    const worksheet = workbook.addWorksheet(sheetName || "Sheet");
+
+    worksheet.columns = columns?.length
+      ? columns
+      : rows.length > 0
+      ? Object.keys(rows[0]).map((key) => ({ header: key, key: key, width: 20 }))
+      : [];
+
+    rows.forEach((row) => {
+      const rowData = { ...row };
+      Object.keys(rowData).forEach((key) => {
+        if (rowData[key] instanceof Date) {
+          rowData[key] = rowData[key].toLocaleString("th-TH");
+        }
+      });
+      worksheet.addRow(rowData);
     });
-    worksheet.addRow(rowData);
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = headerStyle;
+    });
+
+    worksheet.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: 1, column: worksheet.columns.length },
+    };
+
+    worksheet.footer = {
+      oddFooter: `&L&B ${sheetName} &C&D &R&P of &N`,
+    };
   });
-
-  worksheet.getRow(1).eachCell((cell) => {
-    cell.style = headerStyle;
-  });
-
-  worksheet.autoFilter = {
-    from: { row: 1, column: 1 },
-    to: { row: 1, column: columns.length },
-  };
-
-  worksheet.footer = {
-    oddFooter: `&L&B ${sheetName} &C&D &R&P of &N`,
-  };
 
   res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
   res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
