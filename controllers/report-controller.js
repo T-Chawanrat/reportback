@@ -13,11 +13,10 @@ const {
   get04_40whClause,
   get04_41whClause,
   vLeditClause,
-  // get05_10whClause,
-  // get05_11whClause,
   get05_09Clause,
   get05_11Clause,
   get05_n09n11Clause,
+  get05_stdClause,
 } = require("../utils/buildClause");
 // const { formatDate } = require("../utils/formatDate");
 
@@ -441,3 +440,54 @@ exports.get05_n09n11 = async (req, res) => {
     res.status(500).json({ message: "An error occurred" });
   }
 };
+
+exports.get05std = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000, warehouse_id, over_status } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = get05_stdClause({ warehouse_id, over_status });
+
+    let sql = loadSql("view_05_std.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
+
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+// exports.get05std = async (req, res) => {
+//   try {
+//     const page = Number(req.query.page) || 1;
+//     const limit = Number(req.query.limit) || 1000;
+//     const warehouse_id = req.query.warehouse_id;
+//     const over_status = req.query.over_status; 
+
+//     const offset = (page - 1) * limit;
+//     const whereClause = get05_stdClause({ warehouse_id, over_status });
+
+//     let sql = loadSql("view_05_std.sql")
+//       .replace(/__WHERE_CLAUSE__/g, whereClause)
+//       .replace(/__LIMIT__/g, limit)
+//       .replace(/__OFFSET__/g, offset);
+
+//     const [rows] = await db.query(sql);
+
+//     const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+//     const data = rows.map(({ total, ...rest }) => rest);
+
+//     res.json({ data, total });
+//   } catch (err) {
+//     console.error("error:", err);
+//     res.status(500).json({ message: "An error occurred" });
+//   }
+// };

@@ -197,3 +197,19 @@ exports.get05_n09n11Clause = ({ warehouse_id }) => {
 
   return whereClause.trim();
 };
+
+exports.get05_stdClause = ({ warehouse_id, over_status }) => {
+  let whereClause = `1=1`;
+
+  if (warehouse_id) {
+    whereClause += ` AND warehouse_id = ${mysql.escape(warehouse_id)}`;
+  }
+
+  if (over_status === "overtime") {
+    whereClause += ` AND time_in_over_status_text COLLATE utf8mb4_unicode_ci = 'เกินเวลา'`;
+  } else if (over_status === "not_yet") {
+    whereClause += ` AND time_in_over_status_text COLLATE utf8mb4_unicode_ci = 'ยังไม่ถึง'`;
+  }
+
+  return whereClause.trim();
+};

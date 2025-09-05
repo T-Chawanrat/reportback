@@ -33,7 +33,7 @@ exports.export01Excel = async (req, res) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `remark_app_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "Sheet1", filename);
+    await exportToExcel(res, rows, columns, "หมายเหตุ(จากApp)", filename);
   } catch (err) {
     console.error("Export App Remark error:", err);
     res.status(500).json({ message: "An error occurred during export" });
@@ -72,7 +72,7 @@ exports.export02Excel = async (req, res) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `product_warehouse_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "Sheet1", filename);
+    await exportToExcel(res, rows, columns, "สินค้าในคลัง(ไม่มีหมายเหตุ)", filename);
   } catch (err) {
     console.error("Export Report Product Warehouse error:", err);
     res.status(500).json({ message: "An error occurred during export" });
@@ -118,7 +118,7 @@ exports.export03Excel = async (req, res) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `overdue_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "Sheet1", filename);
+    await exportToExcel(res, rows, columns, "สินค้าในคลัง(มีหมายเหตุ)", filename);
   } catch (err) {
     console.error("Export Report Product Warehouse error:", err);
     res.status(500).json({ message: "An error occurred during export" });
@@ -199,10 +199,7 @@ exports.exportMultiSheetV05Excel = async (req, res) => {
 
     const sqlFiles = ["05_09.sql", "05_11.sql", "05_n09n11.sql"];
     const queries = sqlFiles.map((file) =>
-      loadSql(file)
-        .replace("__WHERE_CLAUSE__", whereClause)
-        .replace("__LIMIT__", limit)
-        .replace("__OFFSET__", offset)
+      loadSql(file).replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset)
     );
 
     const results = await Promise.all(queries.map((sql) => db.query(sql)));
@@ -226,11 +223,53 @@ exports.exportMultiSheetV05Excel = async (req, res) => {
     ];
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const filename = `multi_sheet_export_${timestamp}.xlsx`;
+    const filename = `over4w_${timestamp}.xlsx`;
 
     await exportToExcel(res, sheetsConfig, columns, null, filename);
   } catch (err) {
     console.error("Export Multi-Sheet Excel error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};
+
+exports.export05stdExcel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("view_05_std.sql");
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const columns = [
+      { header: "คลังปัจจุบัน", key: "warehouse_name", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      { header: "ตำบล", key: "tambon_name", width: 25 },
+      { header: "อำเภอ", key: "ampur_name", width: 25 },
+      { header: "เวลาส่ง", key: "time_in", width: 25 },
+      { header: "เกินเวลา", key: "time_in_over_status_text", width: 25 },
+      { header: "กี่นาที", key: "time_in_over_amount_text", width: 25 },
+      { header: "ใบปิดบรรทุก", key: "truck_code", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "ที่อยู่ผู้รับ", key: "address", width: 25 },
+      { header: "เบอร์โทร", key: "tel", width: 25 },
+      { header: "รวม (บิล)", key: "receive_code_count", width: 25 },
+      { header: "รวม (กล่อง)", key: "serial_count", width: 25 },
+    ];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `intransit_${timestamp}.xlsx`;
+
+    await exportToExcel(res, rows, columns, "สินค้ากำลังนำส่ง", filename);
+  } catch (err) {
+    console.error("Export Report Product Warehouse error:", err);
     res.status(500).json({ message: "An error occurred during export" });
   }
 };

@@ -1,15 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const https = require("https"); //---เพิ่มคำสั่งนี้
-const fs = require("fs"); //---เพิ่มคำสั่งนี้
+const https = require("https");
+const fs = require("fs");
 const cors = require("cors");
 const morgan = require("morgan");
 const { readdirSync } = require("fs");
 const error = require("./middlewares/error");
 const notfound = require("./middlewares/notfound");
 
-// Load SSL certificate and key ---เพิ่มคำสั่งนี้
 // const sslOptions = {
 //   key: fs.readFileSync('/home/xsendwork/conf/web/xsendwork.com/ssl/xsendwork.com.key'),
 //   cert: fs.readFileSync('/home/xsendwork/conf/web/xsendwork.com/ssl/xsendwork.com.crt'),
@@ -28,7 +27,7 @@ app.use(notfound);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));
-// Use https.createServer() to enable SSL ---แก้ไข จาก app.listen เป็น https.createServer เพื่อใช้งานกับ SSL
+
 // https.createServer(sslOptions, app).listen(port, () => {
 //   console.log(`Server is running on https://localhost:${port}`);
 // });

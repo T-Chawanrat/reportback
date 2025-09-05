@@ -15,7 +15,9 @@ const {
   get04whDetail,
   get05_09,
   get05_11,
-  get05_n09n11
+  get05_n09n11,
+  get05std
+  
 } = require("../controllers/report-controller");
 
 router.get("/vledit", getVLedit);
@@ -33,5 +35,6 @@ router.get("/wh/:truck_load_id", get04whDetail);
 router.get("/05_09", get05_09);
 router.get("/05_11", get05_11);
 router.get("/05_n09n11", get05_n09n11);
+router.get("/05std", get05std);
 
 module.exports = router;
