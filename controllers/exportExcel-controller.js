@@ -307,6 +307,7 @@ exports.exportSlaExcel = async (req, res) => {
       { header: "รหัสสายรถ", key: "route_code", width: 25 },
       { header: "ชื่อสายรถ", key: "route_name", width: 25 },
       { header: "พื้นที่รับผิดชอบ", key: "DC_Mapping", width: 25 },
+      { header: "อัปเดตล่าสุด", key: "lastupdate", width: 25 },
     ];
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
