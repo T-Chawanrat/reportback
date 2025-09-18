@@ -213,3 +213,30 @@ exports.get05_stdClause = ({ warehouse_id, over_status }) => {
 
   return whereClause.trim();
 };
+
+exports.getSlaClause = ({ search_tambon, search_ampur, search_province }) => {
+  let whereClause = `1=1`;
+
+  if (search_tambon) {
+    const searchTambon = search_tambon.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(tambon, '-', '') LIKE ${mysql.escape("%" + searchTambon + "%")}
+        )`;
+  }
+
+  if (search_ampur) {
+    const searchAmpur = search_ampur.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(ampur, '-', '') LIKE ${mysql.escape("%" + searchAmpur + "%")}
+        )`;
+  }
+
+  if (search_province) {
+    const searchProvince = search_province.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(province, '-', '') LIKE ${mysql.escape("%" + searchProvince + "%")}
+        )`;
+  }
+
+  return whereClause.trim();
+};

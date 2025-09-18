@@ -16,7 +16,8 @@ const {
   get05_09,
   get05_11,
   get05_n09n11,
-  get05std
+  get05std,
+  getSla
   
 } = require("../controllers/report-controller");
 
@@ -36,5 +37,6 @@ router.get("/05_09", get05_09);
 router.get("/05_11", get05_11);
 router.get("/05_n09n11", get05_n09n11);
 router.get("/05std", get05std);
+router.get("/sla", getSla );
 
 module.exports = router;

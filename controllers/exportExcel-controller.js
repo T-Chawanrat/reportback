@@ -273,3 +273,48 @@ exports.export05stdExcel = async (req, res) => {
     res.status(500).json({ message: "An error occurred during export" });
   }
 };
+
+exports.exportSlaExcel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("view_sla.sql");
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const columns = [
+      { header: "รหัส", key: "tambon_id", width: 25 },
+      { header: "รหัสไปรษณีย์", key: "zip_code", width: 25 },
+      { header: "ตำบล", key: "tambon", width: 25 },
+      { header: "อำเภอ", key: "ampur", width: 25 },
+      { header: "จังหวัด", key: "province", width: 25 },
+      { header: "คลัง", key: "warehouse_name", width: 25 },
+      { header: "วันจันทร์", key: "Monday", width: 25 },
+      { header: "วันอังคาร", key: "Tuesday", width: 25 },
+      { header: "วันพุธ", key: "Wednesday", width: 25 },
+      { header: "วันพฤหัสบดี", key: "Thursday", width: 25 },
+      { header: "วันศุกร์", key: "Friday", width: 25 },
+      { header: "วันเสาร์", key: "Saturday", width: 25 },
+      { header: "วันอาทิตย์", key: "Sunday", width: 25 },
+      { header: "รหัสสายรถ", key: "route_code", width: 25 },
+      { header: "ชื่อสายรถ", key: "route_name", width: 25 },
+      { header: "พื้นที่รับผิดชอบ", key: "DC_Mapping", width: 25 },
+    ];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `sla_${timestamp}.xlsx`;
+
+    await exportToExcel(res, rows, columns, "SLA", filename);
+  } catch (err) {
+    console.error("Export Report SLA error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};

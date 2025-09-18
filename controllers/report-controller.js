@@ -17,6 +17,7 @@ const {
   get05_11Clause,
   get05_n09n11Clause,
   get05_stdClause,
+  getSlaClause,
 } = require("../utils/buildClause");
 // const { formatDate } = require("../utils/formatDate");
 
@@ -465,29 +466,26 @@ exports.get05std = async (req, res) => {
   }
 };
 
-// exports.get05std = async (req, res) => {
-//   try {
-//     const page = Number(req.query.page) || 1;
-//     const limit = Number(req.query.limit) || 1000;
-//     const warehouse_id = req.query.warehouse_id;
-//     const over_status = req.query.over_status; 
+exports.getSla = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000, search_tambon, search_ampur, search_province } = req.query;
+    const offset = (page - 1) * limit;
 
-//     const offset = (page - 1) * limit;
-//     const whereClause = get05_stdClause({ warehouse_id, over_status });
+    const whereClause = getSlaClause({ search_tambon, search_ampur, search_province });
 
-//     let sql = loadSql("view_05_std.sql")
-//       .replace(/__WHERE_CLAUSE__/g, whereClause)
-//       .replace(/__LIMIT__/g, limit)
-//       .replace(/__OFFSET__/g, offset);
+    let sql = loadSql("view_sla.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
-//     const [rows] = await db.query(sql);
+    const [rows] = await db.query(sql);
 
-//     const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
-//     const data = rows.map(({ total, ...rest }) => rest);
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
 
-//     res.json({ data, total });
-//   } catch (err) {
-//     console.error("error:", err);
-//     res.status(500).json({ message: "An error occurred" });
-//   }
-// };
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
