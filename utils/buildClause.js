@@ -240,3 +240,15 @@ exports.getSlaClause = ({ search_tambon, search_ampur, search_province }) => {
 
   return whereClause.trim();
 };
+
+exports.getVtgTodayClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.getVtg7dClause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};

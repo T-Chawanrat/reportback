@@ -319,3 +319,105 @@ exports.exportSlaExcel = async (req, res) => {
     res.status(500).json({ message: "An error occurred during export" });
   }
 };
+exports.exportVtgTodayExcel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("v_tt_status_booking_vgt_today.sql");
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const columns = [
+      { header: "อ้างอิง VGT", key: "vgt_reference", width: 25 },
+      { header: "DO TT", key: "tt_do", width: 25 },
+      { header: "BOX", key: "box_serial", width: 25 },
+      { header: "BOOKING NO", key: "booking_no", width: 25 },
+      { header: "ชื่อผู้ส่ง", key: "shipper_name", width: 25 },
+      { header: "DC ต้นทาง", key: "origin_dc", width: 25 },
+      { header: "จังหวัดต้นทาง", key: "origin_province", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "จังหวัดผู้รับ", key: "recipient_province", width: 25 },
+      { header: "DC ปลายทาง", key: "destination_dc", width: 25 },
+      { header: "ทะเบียนรถ", key: "truck_license", width: 25 },
+      { header: "ชื่อพนักงานเข้ารับ", key: "pickup_employee_first_name", width: 25 },
+      { header: "นามสกุลพนักงานเข้ารับ", key: "pickup_employee_last_name", width: 25 },
+      { header: "เบอร์โทรศัพท์", key: "pickup_employee_phone", width: 25 },
+      { header: "สถานะ", key: "tt_status", width: 25 },
+      { header: "วันที่สถานะ TT", key: "tt_status_date", width: 25 },
+      { header: "เวลาสถานะ TT", key: "tt_status_time", width: 25 },
+      { header: "เวลารายงาน", key: "report_generated_at", width: 25 },
+      { header: "Status ID", key: "status_id", width: 25 },
+      { header: "Book Deleted", key: "book_is_deleted", width: 25 },
+      { header: "Receive Deleted", key: "receive_is_deleted", width: 25 },
+      { header: "Book Deleted Text", key: "book_is_deleted_text", width: 25 },
+      { header: "Receive Deleted Text", key: "receive_is_deleted_text", width: 25 },
+    ];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `vtg_today_${timestamp}.xlsx`;
+
+    await exportToExcel(res, rows, columns, "VtgToday", filename);
+  } catch (err) {
+    console.error("Export Report VtgToday error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};
+exports.exportVtg7dExcel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("v_tt_status_booking_vgt_7d.sql");
+    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const columns = [
+      { header: "อ้างอิง VGT", key: "vgt_reference", width: 25 },
+      { header: "DO TT", key: "tt_do", width: 25 },
+      { header: "BOX", key: "box_serial", width: 25 },
+      { header: "BOOKING NO", key: "booking_no", width: 25 },
+      { header: "ชื่อผู้ส่ง", key: "shipper_name", width: 25 },
+      { header: "DC ต้นทาง", key: "origin_dc", width: 25 },
+      { header: "จังหวัดต้นทาง", key: "origin_province", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "จังหวัดผู้รับ", key: "recipient_province", width: 25 },
+      { header: "DC ปลายทาง", key: "destination_dc", width: 25 },
+      { header: "ทะเบียนรถ", key: "truck_license", width: 25 },
+      { header: "ชื่อพนักงานเข้ารับ", key: "pickup_employee_first_name", width: 25 },
+      { header: "นามสกุลพนักงานเข้ารับ", key: "pickup_employee_last_name", width: 25 },
+      { header: "เบอร์โทรศัพท์", key: "pickup_employee_phone", width: 25 },
+      { header: "สถานะ", key: "tt_status", width: 25 },
+      { header: "วันที่สถานะ TT", key: "tt_status_date", width: 25 },
+      { header: "เวลาสถานะ TT", key: "tt_status_time", width: 25 },
+      { header: "เวลารายงาน", key: "report_generated_at", width: 25 },
+      { header: "Status ID", key: "status_id", width: 25 },
+      { header: "Book Deleted", key: "book_is_deleted", width: 25 },
+      { header: "Receive Deleted", key: "receive_is_deleted", width: 25 },
+      { header: "Book Deleted Text", key: "book_is_deleted_text", width: 25 },
+      { header: "Receive Deleted Text", key: "receive_is_deleted_text", width: 25 },
+    ];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `vtg_7d_${timestamp}.xlsx`;
+
+    await exportToExcel(res, rows, columns, "Vtg7D", filename);
+  } catch (err) {
+    console.error("Export Report Vtg7D error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};
