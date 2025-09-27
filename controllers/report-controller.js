@@ -18,11 +18,8 @@ const {
   get05_n09n11Clause,
   get05_stdClause,
   getSlaClause,
-  getVtg7dClause,
-  getVtgTodayClause,
   getBookingsClause,
 } = require("../utils/buildClause");
-// const { formatDate } = require("../utils/formatDate");
 
 exports.getVLedit = async (req, res) => {
   try {

@@ -319,57 +319,7 @@ exports.exportSlaExcel = async (req, res) => {
     res.status(500).json({ message: "An error occurred during export" });
   }
 };
-exports.exportVtgTodayExcel = async (req, res) => {
-  try {
-    const limit = 100000;
-    const offset = 0;
 
-    const whereClause = "1=1";
-
-    let sql = loadSql("v_tt_status_booking_vgt_today.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
-
-    const [rows] = await db.query(sql);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "No data found" });
-    }
-
-    const columns = [
-      { header: "อ้างอิง VGT", key: "vgt_reference", width: 25 },
-      { header: "DO TT", key: "tt_do", width: 25 },
-      { header: "BOX", key: "box_serial", width: 25 },
-      { header: "BOOKING NO", key: "booking_no", width: 25 },
-      { header: "ชื่อผู้ส่ง", key: "shipper_name", width: 25 },
-      { header: "DC ต้นทาง", key: "origin_dc", width: 25 },
-      { header: "จังหวัดต้นทาง", key: "origin_province", width: 25 },
-      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
-      { header: "จังหวัดผู้รับ", key: "recipient_province", width: 25 },
-      { header: "DC ปลายทาง", key: "destination_dc", width: 25 },
-      { header: "ทะเบียนรถ", key: "truck_license", width: 25 },
-      { header: "ชื่อพนักงานเข้ารับ", key: "pickup_employee_first_name", width: 25 },
-      { header: "นามสกุลพนักงานเข้ารับ", key: "pickup_employee_last_name", width: 25 },
-      { header: "เบอร์โทรศัพท์", key: "pickup_employee_phone", width: 25 },
-      { header: "สถานะ", key: "tt_status", width: 25 },
-      { header: "วันที่สถานะ TT", key: "tt_status_date", width: 25 },
-      { header: "เวลาสถานะ TT", key: "tt_status_time", width: 25 },
-      { header: "เวลารายงาน", key: "report_generated_at", width: 25 },
-      { header: "Status ID", key: "status_id", width: 25 },
-      { header: "Book Deleted", key: "book_is_deleted", width: 25 },
-      { header: "Receive Deleted", key: "receive_is_deleted", width: 25 },
-      { header: "Book Deleted Text", key: "book_is_deleted_text", width: 25 },
-      { header: "Receive Deleted Text", key: "receive_is_deleted_text", width: 25 },
-    ];
-
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const filename = `vtg_today_${timestamp}.xlsx`;
-
-    await exportToExcel(res, rows, columns, "VtgToday", filename);
-  } catch (err) {
-    console.error("Export Report VtgToday error:", err);
-    res.status(500).json({ message: "An error occurred during export" });
-  }
-};
 exports.exportBookingsExcel = async (req, res) => {
   try {
     const limit = 100000;
@@ -386,40 +336,45 @@ exports.exportBookingsExcel = async (req, res) => {
       return res.status(404).json({ message: "No data found" });
     }
 
+    const formattedRows = rows.map((row) => ({
+      ...row,
+      book_date: new Date(row.book_date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }),
+    }));
+
     const columns = [
-      { header: "Create Date", key: "create_date", width: 25 },
-      { header: "Book Code", key: "book_code", width: 25 },
-      { header: "Book Date", key: "book_date", width: 25 },
-      { header: "Book Time", key: "book_time", width: 25 },
-      { header: "Book Status", key: "book_status", width: 25 },
-      { header: "Book Status TH", key: "book_status_th", width: 25 },
-      { header: "Customer Name", key: "customer_name", width: 25 },
-      { header: "Receive Code", key: "receive_code", width: 25 },
-      { header: "Serial Count", key: "serial_count", width: 25 },
-      { header: "Serial Group", key: "serial_Group", width: 25 },
-      { header: "Shipper Name", key: "shipper_name", width: 25 },
-      { header: "Recipient Name", key: "recipient_name", width: 25 },
-      { header: "Address", key: "address", width: 25 },
-      { header: "Tambon Name", key: "tambon_name", width: 25 },
-      { header: "Ampur Name", key: "ampur_name", width: 25 },
-      { header: "Province Name", key: "province_name", width: 25 },
-      { header: "Zip Code", key: "zip_code", width: 25 },
-      { header: "Tel", key: "tel", width: 25 },
-      { header: "Remark", key: "remark", width: 25 },
-      { header: "Truck ID", key: "truck_id", width: 25 },
-      { header: "Truck Number", key: "truck_number", width: 25 },
-      { header: "License Plate", key: "license_plate", width: 25 },
-      { header: "Status Message", key: "status_message", width: 25 },
-      { header: "Last Status At", key: "last_status_at", width: 25 },
-      { header: "Warehouse Name", key: "warehouse_name", width: 25 },
+      { header: "วันที่สร้าง", key: "create_date", width: 25 },
+      { header: "เลขที่ใบจองรถ", key: "book_code", width: 25 },
+      { header: "วันที่จองรถ", key: "book_date", width: 25 },
+      { header: "เวลาที่จองรถ", key: "book_time", width: 25 },
+      { header: "สถานะการจองรถ", key: "book_status_th", width: 25 },
+      { header: "เจ้าของงาน", key: "customer_name", width: 25 },
+      { header: "เลขที่เอกสาร", key: "receive_code", width: 25 },
+      { header: "จำนวนสินค้า", key: "serial_count", width: 25 },
+      { header: "ชื่อผู้ส่ง", key: "shipper_name", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "ที่อยู่", key: "address", width: 25 },
+      { header: "ตำบล", key: "tambon_name", width: 25 },
+      { header: "อำเภอ", key: "ampur_name", width: 25 },
+      { header: "จังหวัด", key: "province_name", width: 25 },
+      { header: "รหัสไปรษณีย์", key: "zip_code", width: 25 },
+      { header: "เบอร์โทร", key: "tel", width: 25 },
+      { header: "หมายเหตุ", key: "remark", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      { header: "สถานะสินค้า", key: "status_message", width: 25 },
+      { header: "เวลาสถานะล่าสุด", key: "last_status_at", width: 25 },
+      { header: "คลังต้นทาง", key: "warehouse_name", width: 25 },
     ];
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `bookings_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "Bookings", filename);
+    await exportToExcel(res, formattedRows, columns, "ใบจองรถ", filename);
   } catch (err) {
-    console.error("Export Report Vtg7D error:", err);
+    console.error("Export Report Bookings error:", err);
     res.status(500).json({ message: "An error occurred during export" });
   }
 };
