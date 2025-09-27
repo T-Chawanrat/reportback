@@ -252,3 +252,19 @@ exports.getVtg7dClause = ({}) => {
 
   return whereClause.trim();
 };
+exports.getBookingsClause = ({ search, warehouse_id }) => {
+  let whereClause = `1=1`;
+
+  if (search) {
+    const sanitizedSearch = search.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(receive_code, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
+       )`;
+  }
+
+  if (warehouse_id) {
+    whereClause += ` AND warehouse_id = ${mysql.escape(warehouse_id)}`;
+  }
+
+  return whereClause.trim();
+};

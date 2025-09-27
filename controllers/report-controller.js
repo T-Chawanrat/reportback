@@ -20,6 +20,7 @@ const {
   getSlaClause,
   getVtg7dClause,
   getVtgTodayClause,
+  getBookingsClause,
 } = require("../utils/buildClause");
 // const { formatDate } = require("../utils/formatDate");
 
@@ -492,41 +493,19 @@ exports.getSla = async (req, res) => {
   }
 };
 
-exports.getVtgToday = async (req, res) => {
+exports.getBookings = async (req, res) => {
   try {
-    const { page = 1, limit = 1000 } = req.query;
+    const { page = 1, limit = 1000, search, warehouse_id } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause = getVtgTodayClause({});
+    const whereClause = getBookingsClause({ search, warehouse_id });
 
-    let sql = loadSql("v_tt_status_booking_vgt_today.sql")
+    let sql = loadSql("v_tt_booking_status_all.sql")
       .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
 
-    const [rows] = await db.query(sql);
-
-    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
-    const data = rows.map(({ total, ...rest }) => rest);
-
-    res.json({ data, total });
-  } catch (err) {
-    console.error("error:", err);
-    res.status(500).json({ message: "An error occurred" });
-  }
-};
-
-exports.getVtg7d = async (req, res) => {
-  try {
-    const { page = 1, limit = 1000 } = req.query;
-    const offset = (page - 1) * limit;
-
-    const whereClause = getVtg7dClause({});
-
-    let sql = loadSql("v_tt_status_booking_vgt_7d.sql")
-      .replace("__WHERE_CLAUSE__", whereClause)
-      .replace("__LIMIT__", limit)
-      .replace("__OFFSET__", offset);
+    await db.query("SET SESSION group_concat_max_len = 65535;");
 
     const [rows] = await db.query(sql);
 

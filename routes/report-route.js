@@ -18,8 +18,7 @@ const {
   get05_n09n11,
   get05std,
   getSla,
-  getVtgToday,
-  getVtg7d,
+  getBookings,
 } = require("../controllers/report-controller");
 
 router.get("/vledit", getVLedit);
@@ -39,7 +38,6 @@ router.get("/05_11", get05_11);
 router.get("/05_n09n11", get05_n09n11);
 router.get("/05std", get05std);
 router.get("/sla", getSla);
-router.get("/today", getVtgToday);
-router.get("/7d", getVtg7d);
+router.get("/bookings", getBookings);
 
 module.exports = router;
