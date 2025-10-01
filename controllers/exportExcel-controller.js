@@ -371,30 +371,38 @@ exports.exportVgtExcel = async (req, res) => {
       }),
     }));
 
-const columns = [
-  { header: "row_count", key: "row_count", width: 25 },
-  { header: "อ้างอิง VGT", key: "vgt_reference", width: 25 },
-  { header: "DO TT", key: "do_tt", width: 25 },
-  { header: "Box", key: "box", width: 25 },
-  { header: "Booking No", key: "booking_no", width: 25 },
-  { header: "ชื่อผู้ส่ง", key: "sender_name", width: 25 },
-  { header: "DC ต้นทาง", key: "from_dc", width: 25 },
-  { header: "จังหวัดต้นทาง", key: "from_province", width: 25 },
-  { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
-  { header: "จังหวัดผู้รับ", key: "recipient_province", width: 25 },
-  { header: "DC ต้นปลายทาง", key: "to_dc", width: 25 },
-  { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
-  { header: "ชื่อพนักงานเข้ารับ", key: "pickup_staff_first_name", width: 25 },
-  { header: "นามสกุลพนักงานเข้ารับ", key: "pickup_staff_last_name", width: 25 },
-  { header: "เบอร์โทร", key: "phone_number", width: 25 },
-  { header: "สถานะ", key: "status_message", width: 25 },
-  { header: "วันที่สถานะ", key: "tt_status_date", width: 25 },
-  { header: "เวลาสถานะ", key: "tt_status_time", width: 25 },
-  { header: "Date Time Report", key: "date_time_report", width: 25 },
-  { header: "Books Is Deleted Text", key: "books_is_deleted_text", width: 25 },
-  { header: "Receives Is Deleted Text", key: "receives_is_deleted_text", width: 25 },
-  { header: "Book Status (TH)", key: "book_status_th", width: 25 },
-];
+    const columns = [
+      { header: "ลำดับ", key: "row_no", width: 25 },
+      { header: "อ้างอิง VGT", key: "vgt_reference", width: 25 },
+      { header: "DO TT", key: "DO_TT", width: 25 },
+      { header: "Box", key: "BOX", width: 25 },
+      { header: "Booking No", key: "BOOKING_NO", width: 25 },
+      { header: "ชื่อผู้ส่ง", key: "sender_name", width: 25 },
+      { header: "DC ต้นทาง", key: "from_dc", width: 25 },
+      { header: "จังหวัดต้นทาง", key: "from_province", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "จังหวัดผู้รับ", key: "recipient_province", width: 25 },
+      { header: "DC ต้นปลายทาง", key: "to_dc", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      {
+        header: "ชื่อพนักงานเข้ารับ",
+        key: "pickup_staff_first_name",
+        width: 25,
+      },
+      {
+        header: "นามสกุลพนักงานเข้ารับ",
+        key: "pickup_staff_last_name",
+        width: 25,
+      },
+      { header: "เบอร์โทร", key: "phone_number", width: 25 },
+      { header: "สถานะ", key: "status_message", width: 25 },
+      { header: "วันที่สถานะ", key: "tt_status_date", width: 25 },
+      { header: "เวลาสถานะ", key: "tt_status_time", width: 25 },
+      { header: "วันที่รายงาน", key: "date_time_report", width: 25 },
+      { header: "ใบจองรถ", key: "books_is_deleted_text", width: 25 },
+      { header: "ใบส่งสินค้า", key: "receives_is_deleted_text", width: 25 },
+      { header: "สถานะใบจองรถ", key: "book_status_th", width: 25 },
+    ];
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `vgt_${timestamp}.xlsx`;
