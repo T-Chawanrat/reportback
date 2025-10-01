@@ -17,7 +17,7 @@ const notfound = require("./middlewares/notfound");
 
 // middleware
 app.use(morgan("dev"));
-app.use(express.json({ limit: "20mb" }));
+app.use(express.json({ imit: "20mb" }));
 app.use(cors());
 
 readdirSync("./routes").map((c) => app.use("/", require("./routes/" + c)));

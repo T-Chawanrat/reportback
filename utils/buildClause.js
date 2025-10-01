@@ -7,7 +7,9 @@ exports.vLeditClause = ({ type, receive_id }) => {
   }
 
   if (receive_id) {
-    whereClause += ` AND view_l_edit_table_admin.receive_id = ${mysql.escape(receive_id)}`;
+    whereClause += ` AND view_l_edit_table_admin.receive_id = ${mysql.escape(
+      receive_id
+    )}`;
   }
   return whereClause.trim();
 };
@@ -18,8 +20,12 @@ exports.get01Clause = ({ search }) => {
   if (search) {
     const sanitizedSearch = search.replace(/-/g, "");
     whereClause += ` AND (
-      REPLACE(receive_code, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
-      OR REPLACE(reference_no, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
+      REPLACE(receive_code, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      OR REPLACE(reference_no, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
     )`;
   }
 
@@ -32,8 +38,12 @@ exports.get02Clause = ({ search, warehouse_id, customer_id }) => {
   if (search) {
     const sanitizedSearch = search.replace(/-/g, "");
     whereClause += ` AND (
-      REPLACE(receive_code, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
-      OR REPLACE(reference_no, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
+      REPLACE(receive_code, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      OR REPLACE(reference_no, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
     )`;
   }
 
@@ -48,20 +58,32 @@ exports.get02Clause = ({ search, warehouse_id, customer_id }) => {
   return whereClause.trim();
 };
 
-exports.get03Clause = ({ search, remark, resend_date_filter, warehouse_id, customer_id }) => {
+exports.get03Clause = ({
+  search,
+  remark,
+  resend_date_filter,
+  warehouse_id,
+  customer_id,
+}) => {
   let whereClause = `1=1`;
 
   if (search) {
     const sanitizedSearch = search.replace(/-/g, "");
     whereClause += ` AND (
-      REPLACE(receive_code, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
-      OR REPLACE(reference_no, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
+      REPLACE(receive_code, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      OR REPLACE(reference_no, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
     )`;
   }
 
   if (remark) {
     const sanitizedRemark = remark.replace(/-/g, "");
-    whereClause += ` AND remark LIKE ${mysql.escape("%" + sanitizedRemark + "%")}`;
+    whereClause += ` AND remark LIKE ${mysql.escape(
+      "%" + sanitizedRemark + "%"
+    )}`;
   }
 
   if (resend_date_filter === "has_resend") {
@@ -97,7 +119,9 @@ exports.get04_11stdClause = ({ truck_load_id }) => {
   let whereClause = `1=1`;
 
   if (truck_load_id) {
-    whereClause += ` AND v04_11_detail_w6_on_truck_std.truck_load_id = ${mysql.escape(truck_load_id)}`;
+    whereClause += ` AND v04_11_detail_w6_on_truck_std.truck_load_id = ${mysql.escape(
+      truck_load_id
+    )}`;
   }
   return whereClause.trim();
 };
@@ -118,7 +142,9 @@ exports.get04_21outboundClause = ({ truck_load_id }) => {
   let whereClause = `1=1`;
 
   if (truck_load_id) {
-    whereClause += ` AND v04_21_detail_w6_on_truck_15_outbound.truck_load_id = ${mysql.escape(truck_load_id)}`;
+    whereClause += ` AND v04_21_detail_w6_on_truck_15_outbound.truck_load_id = ${mysql.escape(
+      truck_load_id
+    )}`;
   }
 
   return whereClause.trim();
@@ -140,7 +166,9 @@ exports.get04_31inboundClause = ({ truck_load_id }) => {
   let whereClause = `1=1`;
 
   if (truck_load_id) {
-    whereClause += ` AND v04_31_detail_w6_on_truck_15_inbound.truck_load_id = ${mysql.escape(truck_load_id)}`;
+    whereClause += ` AND v04_31_detail_w6_on_truck_15_inbound.truck_load_id = ${mysql.escape(
+      truck_load_id
+    )}`;
   }
 
   return whereClause.trim();
@@ -162,7 +190,9 @@ exports.get04_41whClause = ({ truck_load_id }) => {
   let whereClause = `1=1`;
 
   if (truck_load_id) {
-    whereClause += ` AND v04_41_detail_w6_on_truck_15_wh_wh.truck_load_id = ${mysql.escape(truck_load_id)}`;
+    whereClause += ` AND v04_41_detail_w6_on_truck_15_wh_wh.truck_load_id = ${mysql.escape(
+      truck_load_id
+    )}`;
   }
 
   return whereClause.trim();
@@ -234,32 +264,25 @@ exports.getSlaClause = ({ search_tambon, search_ampur, search_province }) => {
   if (search_province) {
     const searchProvince = search_province.replace(/-/g, "");
     whereClause += ` AND (
-      REPLACE(province, '-', '') LIKE ${mysql.escape("%" + searchProvince + "%")}
+      REPLACE(province, '-', '') LIKE ${mysql.escape(
+        "%" + searchProvince + "%"
+      )}
         )`;
   }
 
   return whereClause.trim();
 };
 
-exports.getVtgTodayClause = ({}) => {
-  let whereClause = `1=1`;
-
-  return whereClause.trim();
-};
-
-exports.getVtg7dClause = ({}) => {
-  let whereClause = `1=1`;
-
-  return whereClause.trim();
-};
 exports.getBookingsClause = ({ search, warehouse_id }) => {
   let whereClause = `1=1`;
 
   if (search) {
     const sanitizedSearch = search.replace(/-/g, "");
     whereClause += ` AND (
-      REPLACE(receive_code, '-', '') LIKE ${mysql.escape("%" + sanitizedSearch + "%")}
-       )`;
+      REPLACE(receive_code, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
   }
 
   if (warehouse_id) {

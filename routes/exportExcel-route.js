@@ -8,6 +8,7 @@ const {
   export05stdExcel,
   exportSlaExcel,
   exportBookingsExcel,
+  exportVgtExcel,
 } = require("../controllers/exportExcel-controller");
 
 router.get("/export01", export01Excel);
@@ -17,5 +18,7 @@ router.get("/export05", exportMultiSheetV05Excel);
 router.get("/export05std", export05stdExcel);
 router.get("/exportSla", exportSlaExcel);
 router.get("/exportBookings", exportBookingsExcel);
+router.get("/exportVgt", exportVgtExcel);
+
 
 module.exports = router;

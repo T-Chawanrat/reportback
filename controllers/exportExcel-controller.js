@@ -10,7 +10,10 @@ exports.export01Excel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("01_not18do_resend.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -48,7 +51,10 @@ exports.export02Excel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("02_do_now_dc_no_remark.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -72,7 +78,13 @@ exports.export02Excel = async (req, res) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `product_warehouse_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "สินค้าในคลัง(ไม่มีหมายเหตุ)", filename);
+    await exportToExcel(
+      res,
+      rows,
+      columns,
+      "สินค้าในคลัง(ไม่มีหมายเหตุ)",
+      filename
+    );
   } catch (err) {
     console.error("Export Report Product Warehouse error:", err);
     res.status(500).json({ message: "An error occurred during export" });
@@ -118,78 +130,18 @@ exports.export03Excel = async (req, res) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `overdue_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "สินค้าในคลัง(มีหมายเหตุ)", filename);
+    await exportToExcel(
+      res,
+      rows,
+      columns,
+      "สินค้าในคลัง(มีหมายเหตุ)",
+      filename
+    );
   } catch (err) {
     console.error("Export Report Product Warehouse error:", err);
     res.status(500).json({ message: "An error occurred during export" });
   }
 };
-
-// const ExcelJS = require("exceljs");
-
-// exports.exportMultiSheetV05Excel = async (req, res) => {
-//   try {
-//     const limit = 100000;
-//     const offset = 0;
-//     const whereClause = "1=1";
-
-//     const sqlFiles = ["05_09.sql", "05_11.sql", "05_n09n11.sql"];
-//     const queries = sqlFiles.map((file) =>
-//       loadSql(file).replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset)
-//     );
-
-//     const results = await Promise.all(queries.map((sql) => db.query(sql)));
-//     const [rows1, rows2, rows3] = results.map((result) => result[0]);
-
-//     const columns = [
-//       { header: "คลังปัจจุบัน", key: "warehouse_name", width: 25 },
-//       { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
-//       { header: "วันที่ล่าสุด", key: "datetime", width: 25 },
-//       { header: "ใบปิดบรรทุก", key: "truck_code", width: 25 },
-//       { header: "เลขที่บิล", key: "receive_code", width: 25 },
-//       { header: "หมายเลขกล่อง", key: "serial_no", width: 25 },
-//       { header: "เกินเวลา", key: "time_remaining_text", width: 25 },
-//       { header: "สถานะ", key: "status_message", width: 25 },
-//     ];
-
-//     const workbook = new ExcelJS.Workbook();
-
-//     const sheetsConfig = [
-//       { name: "กำลังนำจ่าย", data: rows1 },
-//       { name: "ไม่คืนคลัง", data: rows2 },
-//       { name: "อื่นๆ", data: rows3 },
-//     ];
-
-//     sheetsConfig.forEach(({ name, data }) => {
-//       const sheet = workbook.addWorksheet(name);
-//       sheet.columns = columns;
-
-//       if (data && data.length > 0) {
-//         sheet.addRows(data);
-//         sheet.getColumn("datetime").numFmt = "yyyy-mm-dd hh:mm:ss";
-//       }
-
-//       const headerRow = sheet.getRow(1);
-//       headerRow.eachCell((cell) => {
-//         cell.font = { bold: true, color: { argb: "FFFFFF" } };
-//         cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "465FFF" } };
-//         cell.alignment = { vertical: "middle", horizontal: "center" };
-//       });
-//     });
-
-//     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-//     const filename = `multi_sheet_export_${timestamp}.xlsx`;
-
-//     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//     res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
-
-//     await workbook.xlsx.write(res);
-//     res.end();
-//   } catch (err) {
-//     console.error("Export Multi-Sheet Excel error:", err);
-//     res.status(500).json({ message: "An error occurred during export" });
-//   }
-// };
 
 exports.exportMultiSheetV05Excel = async (req, res) => {
   try {
@@ -199,7 +151,10 @@ exports.exportMultiSheetV05Excel = async (req, res) => {
 
     const sqlFiles = ["05_09.sql", "05_11.sql", "05_n09n11.sql"];
     const queries = sqlFiles.map((file) =>
-      loadSql(file).replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset)
+      loadSql(file)
+        .replace("__WHERE_CLAUSE__", whereClause)
+        .replace("__LIMIT__", limit)
+        .replace("__OFFSET__", offset)
     );
 
     const results = await Promise.all(queries.map((sql) => db.query(sql)));
@@ -240,7 +195,10 @@ exports.export05stdExcel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("view_05_std.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -282,7 +240,10 @@ exports.exportSlaExcel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("view_sla.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -328,7 +289,10 @@ exports.exportBookingsExcel = async (req, res) => {
     const whereClause = "1=1";
 
     let sql = loadSql("v_tt_booking_status_all.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -373,6 +337,69 @@ exports.exportBookingsExcel = async (req, res) => {
     const filename = `bookings_${timestamp}.xlsx`;
 
     await exportToExcel(res, formattedRows, columns, "ใบจองรถ", filename);
+  } catch (err) {
+    console.error("Export Report Bookings error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};
+
+exports.exportVgtExcel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("v_tt_status_booking_vgt.sql");
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const formattedRows = rows.map((row) => ({
+      ...row,
+      tt_status_date: new Date(row.tt_status_date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }),
+    }));
+
+const columns = [
+  { header: "row_count", key: "row_count", width: 25 },
+  { header: "อ้างอิง VGT", key: "vgt_reference", width: 25 },
+  { header: "DO TT", key: "do_tt", width: 25 },
+  { header: "Box", key: "box", width: 25 },
+  { header: "Booking No", key: "booking_no", width: 25 },
+  { header: "ชื่อผู้ส่ง", key: "sender_name", width: 25 },
+  { header: "DC ต้นทาง", key: "from_dc", width: 25 },
+  { header: "จังหวัดต้นทาง", key: "from_province", width: 25 },
+  { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+  { header: "จังหวัดผู้รับ", key: "recipient_province", width: 25 },
+  { header: "DC ต้นปลายทาง", key: "to_dc", width: 25 },
+  { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+  { header: "ชื่อพนักงานเข้ารับ", key: "pickup_staff_first_name", width: 25 },
+  { header: "นามสกุลพนักงานเข้ารับ", key: "pickup_staff_last_name", width: 25 },
+  { header: "เบอร์โทร", key: "phone_number", width: 25 },
+  { header: "สถานะ", key: "status_message", width: 25 },
+  { header: "วันที่สถานะ", key: "tt_status_date", width: 25 },
+  { header: "เวลาสถานะ", key: "tt_status_time", width: 25 },
+  { header: "Date Time Report", key: "date_time_report", width: 25 },
+  { header: "Books Is Deleted Text", key: "books_is_deleted_text", width: 25 },
+  { header: "Receives Is Deleted Text", key: "receives_is_deleted_text", width: 25 },
+  { header: "Book Status (TH)", key: "book_status_th", width: 25 },
+];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `vgt_${timestamp}.xlsx`;
+
+    await exportToExcel(res, formattedRows, columns, "VGT", filename);
   } catch (err) {
     console.error("Export Report Bookings error:", err);
     res.status(500).json({ message: "An error occurred during export" });
