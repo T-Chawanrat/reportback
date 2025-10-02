@@ -112,6 +112,25 @@ exports.export03Excel = async (req, res) => {
       return res.status(404).json({ message: "No data found" });
     }
 
+    const formattedRows = rows.map((row) => ({
+      ...row,
+      receive_date: new Date(row.receive_date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }),
+      delivery_date: new Date(row.delivery_date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }),
+      resend_date: new Date(row.resend_date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }),
+    }));
+
     const columns = [
       { header: "หมายเหตุ", key: "remark", width: 25 },
       { header: "วันที่หมายเหตุล่าสุด", key: "create_date", width: 25 },
@@ -132,7 +151,7 @@ exports.export03Excel = async (req, res) => {
 
     await exportToExcel(
       res,
-      rows,
+      formattedRows,
       columns,
       "สินค้าในคลัง(มีหมายเหตุ)",
       filename
@@ -410,6 +429,44 @@ exports.exportVgtExcel = async (req, res) => {
     await exportToExcel(res, formattedRows, columns, "VGT", filename);
   } catch (err) {
     console.error("Export Report Bookings error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};
+
+exports.exportReceiveNoImageExcel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("v_receive_no_image.sql");
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const columns = [
+      { header: "คลังปลายทาง", key: "warehouse_name", width: 25 },
+      { header: "เจ้าของงาน", key: "customer_name", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "วันที่", key: "bill_date", width: 25 },
+      { header: "เลขที่เอกสาร", key: "receive_code", width: 25 },
+      { header: "เลขที่กล่อง", key: "serial_no", width: 25 },
+    ];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `receive_no_image_${timestamp}.xlsx`;
+
+    await exportToExcel(res, rows, columns, "ปิดบิลไม่มีรูป", filename);
+  } catch (err) {
+    console.error("Export Report Receive No Image error:", err);
     res.status(500).json({ message: "An error occurred during export" });
   }
 };

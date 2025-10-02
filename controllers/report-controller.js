@@ -19,6 +19,7 @@ const {
   get05_stdClause,
   getSlaClause,
   getBookingsClause,
+  getReceiveNoImageClause,
 } = require("../utils/buildClause");
 
 exports.getVLedit = async (req, res) => {
@@ -31,7 +32,10 @@ exports.getVLedit = async (req, res) => {
 
     let sql = loadSql("v_l_edit_table.sql");
 
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -52,7 +56,10 @@ exports.get01 = async (req, res) => {
     const whereClause = get01Clause({ search });
 
     let sql = loadSql("01_not18do_resend.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -68,13 +75,22 @@ exports.get01 = async (req, res) => {
 
 exports.get02 = async (req, res) => {
   try {
-    const { search, page = 1, limit = 1000, warehouse_id, customer_id } = req.query;
+    const {
+      search,
+      page = 1,
+      limit = 1000,
+      warehouse_id,
+      customer_id,
+    } = req.query;
 
     const offset = (page - 1) * limit;
     const whereClause = get02Clause({ search, warehouse_id, customer_id });
 
     let sql = loadSql("02_do_now_dc_no_remark.sql");
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -112,8 +128,11 @@ exports.get03 = async (req, res) => {
     });
 
     const allowedSortFields = ["create_date"];
-    const orderByField = allowedSortFields.includes(sort_by) ? sort_by : "create_date";
-    const orderByDirection = sort_order === "asc" || sort_order === "desc" ? sort_order : "desc";
+    const orderByField = allowedSortFields.includes(sort_by)
+      ? sort_by
+      : "create_date";
+    const orderByDirection =
+      sort_order === "asc" || sort_order === "desc" ? sort_order : "desc";
 
     let sql = loadSql("03_not_18_do_is_remark.sql");
     sql = sql
@@ -168,7 +187,10 @@ exports.get04stdDetail = async (req, res) => {
 
     let sql = loadSql("04_11_detail_w6_on_truck_std.sql");
 
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -215,7 +237,10 @@ exports.get04outboundDetail = async (req, res) => {
 
     let sql = loadSql("04_21_detail_w6_on_truck_15_outbound.sql");
 
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -262,7 +287,10 @@ exports.get04inboundDetail = async (req, res) => {
 
     let sql = loadSql("04_31_detail_w6_on_truck_15_inbound.sql");
 
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -309,7 +337,10 @@ exports.get04whDetail = async (req, res) => {
 
     let sql = loadSql("04_41_detail_w6_on_truck_15_wh_wh.sql");
 
-    sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
 
     const [rows] = await db.query(sql);
 
@@ -321,54 +352,6 @@ exports.get04whDetail = async (req, res) => {
     res.status(500).json({ message: "An error occurred" });
   }
 };
-
-// exports.get05 = async (req, res) => {
-//   try {
-//     const { page = 1, limit = 1000 } = req.query;
-//     const offset = (page - 1) * limit;
-
-//     const whereClause = get05_10whClause({});
-
-//     let sql = loadSql("05_11_detail_w6_on_truck_std.sql")
-//       // let sql = loadSql("05_10_tk_w6_on_truck_std.sql")
-//       .replace("__WHERE_CLAUSE__", whereClause)
-//       .replace("__LIMIT__", limit)
-//       .replace("__OFFSET__", offset);
-
-//     const [rows] = await db.query(sql);
-
-//     const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
-//     const data = rows.map(({ total, ...rest }) => rest);
-
-//     res.json({ data, total });
-//   } catch (err) {
-//     console.error("error:", err);
-//     res.status(500).json({ message: "An error occurred" });
-//   }
-// };
-
-// exports.get05Detail = async (req, res) => {
-//   try {
-//     const { page = 1, limit = 1000 } = req.query;
-//     const offset = (page - 1) * limit;
-//     const { truck_load_id } = req.params;
-
-//     const whereClause = get05_11whClause({ truck_load_id });
-
-//     let sql = loadSql("05_11_detail_w6_on_truck_std.sql");
-
-//     sql = sql.replace("__WHERE_CLAUSE__", whereClause).replace("__LIMIT__", limit).replace("__OFFSET__", offset);
-
-//     const [rows] = await db.query(sql);
-
-//     res.json({
-//       data: rows,
-//     });
-//   } catch (err) {
-//     console.error("error:", err);
-//     res.status(500).json({ message: "An error occurred" });
-//   }
-// };
 
 exports.get05_09 = async (req, res) => {
   try {
@@ -468,10 +451,20 @@ exports.get05std = async (req, res) => {
 
 exports.getSla = async (req, res) => {
   try {
-    const { page = 1, limit = 1000, search_tambon, search_ampur, search_province } = req.query;
+    const {
+      page = 1,
+      limit = 1000,
+      search_tambon,
+      search_ampur,
+      search_province,
+    } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause = getSlaClause({ search_tambon, search_ampur, search_province });
+    const whereClause = getSlaClause({
+      search_tambon,
+      search_ampur,
+      search_province,
+    });
 
     let sql = loadSql("view_sla.sql")
       .replace("__WHERE_CLAUSE__", whereClause)
@@ -516,3 +509,26 @@ exports.getBookings = async (req, res) => {
   }
 };
 
+exports.getReceiveNoImage = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000, searchCustomer, searchRecipient, to_warehouse_id } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = getReceiveNoImageClause({ searchCustomer , searchRecipient, to_warehouse_id });
+
+    let sql = loadSql("v_receive_no_image.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
+
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};

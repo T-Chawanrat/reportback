@@ -19,6 +19,7 @@ const {
   get05std,
   getSla,
   getBookings,
+  getReceiveNoImage,
 } = require("../controllers/report-controller");
 
 router.get("/vledit", getVLedit);
@@ -39,5 +40,6 @@ router.get("/05_n09n11", get05_n09n11);
 router.get("/05std", get05std);
 router.get("/sla", getSla);
 router.get("/bookings", getBookings);
+router.get("/noimage", getReceiveNoImage)
 
 module.exports = router;
