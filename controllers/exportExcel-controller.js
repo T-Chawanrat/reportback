@@ -112,23 +112,20 @@ exports.export03Excel = async (req, res) => {
       return res.status(404).json({ message: "No data found" });
     }
 
+    const formatDate = (date) =>
+      date
+        ? new Date(date).toLocaleDateString("th-TH", {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+          })
+        : "";
+
     const formattedRows = rows.map((row) => ({
       ...row,
-      receive_date: new Date(row.receive_date).toLocaleDateString("th-TH", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-      }),
-      delivery_date: new Date(row.delivery_date).toLocaleDateString("th-TH", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-      }),
-      resend_date: new Date(row.resend_date).toLocaleDateString("th-TH", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-      }),
+      receive_date: formatDate(row.receive_date),
+      delivery_date: formatDate(row.delivery_date),
+      resend_date: formatDate(row.resend_date),
     }));
 
     const columns = [
