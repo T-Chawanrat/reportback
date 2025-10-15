@@ -501,7 +501,7 @@ exports.exportMissingV1Excel = async (req, res) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `missing_images_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "ปิดบิลไม่มีรูป", filename);
+    await exportToExcel(res, rows, columns, "บิลวันที่xxไม่มีรูป", filename);
   } catch (err) {
     console.error("Export Report Missing Images error:", err, "Error message error:", err);
     res.status(500).json({ message: "An error occurred during export" });
@@ -528,7 +528,7 @@ exports.exportMissingV2Excel = async (req, res) => {
     }
 
     const columns = [
-      { header: "คลังปลายทาง", key: "warehouse_name", width: 25 },
+      { header: "คลังปลายทาง", key: "to_warehouse_name", width: 25 },
       { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
       { header: "วันที่ปิดระบบ", key: "datetime", width: 25 },
       { header: "เจ้าของงาน", key: "customer_name", width: 25 },
@@ -541,7 +541,7 @@ exports.exportMissingV2Excel = async (req, res) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `missing_transactions_${timestamp}.xlsx`;
 
-    await exportToExcel(res, rows, columns, "ปิดบิลไม่มีรูป", filename);
+    await exportToExcel(res, rows, columns, "ปิดบิลวันที่xxไม่มีรูป", filename);
   } catch (err) {
     console.error("Export Report Missing Transactions error:", err, "Error message error:", err);
     res.status(500).json({ message: "An error occurred during export" });
