@@ -292,7 +292,11 @@ exports.getBookingsClause = ({ search, warehouse_id }) => {
   return whereClause.trim();
 };
 
-exports.getReceiveNoImageClause = ({ searchCustomer, searchRecipient, to_warehouse_id }) => {
+exports.getReceiveNoImageClause = ({
+  searchCustomer,
+  searchRecipient,
+  to_warehouse_id,
+}) => {
   let whereClause = `1=1`;
 
   if (searchCustomer) {
@@ -308,6 +312,64 @@ exports.getReceiveNoImageClause = ({ searchCustomer, searchRecipient, to_warehou
     const sanitizedSearch = searchRecipient.replace(/-/g, "");
     whereClause += ` AND (
       REPLACE(recipient_name, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
+  }
+
+  if (to_warehouse_id) {
+    whereClause += ` AND to_warehouse_id = ${mysql.escape(to_warehouse_id)}`;
+  }
+
+  return whereClause.trim();
+};
+
+exports.getMissingV1Clause = ({}) => {
+  let whereClause = `1=1`;
+
+  return whereClause.trim();
+};
+
+exports.getMissingV2Clause = ({
+  searchCustomer,
+  searchRecipient,
+  searchShipper,
+  searchLicensePlate,
+  to_warehouse_id,
+}) => {
+  let whereClause = `1=1`;
+
+  if (searchCustomer) {
+    const sanitizedSearch = searchCustomer.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(customer_name, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
+  }
+
+  if (searchRecipient) {
+    const sanitizedSearch = searchRecipient.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(recipient_name, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
+  }
+
+  if (searchShipper) {
+    const sanitizedSearch = searchShipper.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(shipper_name, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
+  }
+
+  if (searchLicensePlate) {
+    const sanitizedSearch = searchLicensePlate.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(license_plate, '-', '') LIKE ${mysql.escape(
         "%" + sanitizedSearch + "%"
       )}
       )`;

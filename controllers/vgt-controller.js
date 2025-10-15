@@ -2,7 +2,6 @@ const db = require("../utils/db");
 const { loadSql } = require("../utils/loadSql");
 const { getVgtClause } = require("../utils/VgtCluase");
 
-
 exports.getVGT = async (req, res) => {
   try {
     const { page = 1, limit = 1000, book_status } = req.query;
@@ -14,6 +13,10 @@ exports.getVGT = async (req, res) => {
       .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
+
+    await db.query("CALL replace_bt();");
+
+    console.log("replace_bt() executed successfully.");
 
     const [rows] = await db.query(sql);
 

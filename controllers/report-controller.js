@@ -20,6 +20,8 @@ const {
   getSlaClause,
   getBookingsClause,
   getReceiveNoImageClause,
+  getMissingV1Clause,
+  getMissingV2Clause,
 } = require("../utils/buildClause");
 
 exports.getVLedit = async (req, res) => {
@@ -511,12 +513,84 @@ exports.getBookings = async (req, res) => {
 
 exports.getReceiveNoImage = async (req, res) => {
   try {
-    const { page = 1, limit = 1000, searchCustomer, searchRecipient, to_warehouse_id } = req.query;
+    const {
+      page = 1,
+      limit = 1000,
+      searchCustomer,
+      searchRecipient,
+      to_warehouse_id,
+    } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause = getReceiveNoImageClause({ searchCustomer , searchRecipient, to_warehouse_id });
+    const whereClause = getReceiveNoImageClause({
+      searchCustomer,
+      searchRecipient,
+      to_warehouse_id,
+    });
 
     let sql = loadSql("v_receive_no_image.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
+
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.getMissingV1 = async (req, res) => {
+  try {
+    const { page = 1, limit = 1000 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = getMissingV1Clause({});
+
+    let sql = loadSql("tmp_missing_sign_images_v1.sql")
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    const total = rows.length > 0 && rows[0].total ? rows[0].total : 0;
+    const data = rows.map(({ total, ...rest }) => rest);
+
+    res.json({ data, total });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+exports.getMissingV2 = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 1000,
+      searchCustomer,
+      searchRecipient,
+      searchShipper,
+      searchLicensePlate,
+      to_warehouse_id,
+    } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = getMissingV2Clause({
+      searchCustomer,
+      searchRecipient,
+      searchShipper,
+      searchLicensePlate,
+      to_warehouse_id,
+    });
+
+    let sql = loadSql("tmp_missing_sign_transactions_v2.sql")
       .replace("__WHERE_CLAUSE__", whereClause)
       .replace("__LIMIT__", limit)
       .replace("__OFFSET__", offset);
