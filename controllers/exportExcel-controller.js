@@ -467,3 +467,83 @@ exports.exportReceiveNoImageExcel = async (req, res) => {
     res.status(500).json({ message: "An error occurred during export" });
   }
 };
+
+exports.exportMissingV1Excel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("tmp_missing_sign_images_v1.sql");
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const columns = [
+      { header: "คลังปลายทาง", key: "warehouse_name", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      { header: "วันที่ปิดระบบ", key: "datetime", width: 25 },
+      { header: "เจ้าของงาน", key: "customer_name", width: 25 },
+      { header: "ชื่อผู้ส่ง", key: "shipper_name", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "เลขที่เอกสาร", key: "receive_code", width: 25 },
+      { header: "เลขที่กล่อง", key: "serial_no", width: 25 },
+    ];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `missing_images_${timestamp}.xlsx`;
+
+    await exportToExcel(res, rows, columns, "ปิดบิลไม่มีรูป", filename);
+  } catch (err) {
+    console.error("Export Report Missing Images error:", err, "Error message error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};
+
+exports.exportMissingV2Excel = async (req, res) => {
+  try {
+    const limit = 100000;
+    const offset = 0;
+
+    const whereClause = "1=1";
+
+    let sql = loadSql("tmp_missing_sign_transactions_v2.sql");
+    sql = sql
+      .replace("__WHERE_CLAUSE__", whereClause)
+      .replace("__LIMIT__", limit)
+      .replace("__OFFSET__", offset);
+
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No data found" });
+    }
+
+    const columns = [
+      { header: "คลังปลายทาง", key: "warehouse_name", width: 25 },
+      { header: "ทะเบียนรถ", key: "license_plate", width: 25 },
+      { header: "วันที่ปิดระบบ", key: "datetime", width: 25 },
+      { header: "เจ้าของงาน", key: "customer_name", width: 25 },
+      { header: "ชื่อผู้ส่ง", key: "shipper_name", width: 25 },
+      { header: "ชื่อผู้รับ", key: "recipient_name", width: 25 },
+      { header: "เลขที่เอกสาร", key: "receive_code", width: 25 },
+      { header: "เลขที่กล่อง", key: "serial_no", width: 25 },
+    ];
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `missing_transactions_${timestamp}.xlsx`;
+
+    await exportToExcel(res, rows, columns, "ปิดบิลไม่มีรูป", filename);
+  } catch (err) {
+    console.error("Export Report Missing Transactions error:", err, "Error message error:", err);
+    res.status(500).json({ message: "An error occurred during export" });
+  }
+};

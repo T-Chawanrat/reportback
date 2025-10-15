@@ -10,6 +10,7 @@ const {
   exportBookingsExcel,
   exportVgtExcel,
   exportReceiveNoImageExcel,
+  exportMissingV2Excel,
 } = require("../controllers/exportExcel-controller");
 
 router.get("/export01", export01Excel);
@@ -20,6 +21,7 @@ router.get("/export05std", export05stdExcel);
 router.get("/export-sla", exportSlaExcel);
 router.get("/export-bookings", exportBookingsExcel);
 router.get("/export-noimage", exportReceiveNoImageExcel);
+router.get("/export-missingv2", exportMissingV2Excel);
 router.get("/export-vgt", exportVgtExcel);
 
 
