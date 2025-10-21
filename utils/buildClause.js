@@ -324,8 +324,44 @@ exports.getReceiveNoImageClause = ({
   return whereClause.trim();
 };
 
-exports.getMissingV1Clause = ({}) => {
+exports.getImagesV1Clause = ({
+  to_warehouse_id,
+  searchCustomer,
+  searchReceiveCode,
+  searchShipper,
+}) => {
   let whereClause = `1=1`;
+
+  if (searchCustomer) {
+    const sanitizedSearch = searchCustomer.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(customer_name, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
+  }
+
+  if (searchReceiveCode) {
+    const sanitizedSearch = searchReceiveCode.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(receive_code, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
+  }
+
+  if (searchShipper) {
+    const sanitizedSearch = searchShipper.replace(/-/g, "");
+    whereClause += ` AND (
+      REPLACE(shipper_name, '-', '') LIKE ${mysql.escape(
+        "%" + sanitizedSearch + "%"
+      )}
+      )`;
+  }
+
+  if (to_warehouse_id) {
+    whereClause += ` AND to_warehouse_id = ${mysql.escape(to_warehouse_id)}`;
+  }
 
   return whereClause.trim();
 };

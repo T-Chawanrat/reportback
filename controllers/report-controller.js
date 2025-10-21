@@ -20,7 +20,7 @@ const {
   getSlaClause,
   getBookingsClause,
   getReceiveNoImageClause,
-  getMissingV1Clause,
+  getImagesV1Clause,
   getMissingV2Clause,
 } = require("../utils/buildClause");
 
@@ -545,12 +545,24 @@ exports.getReceiveNoImage = async (req, res) => {
   }
 };
 
-exports.getMissingV1 = async (req, res) => {
+exports.getImagesV1 = async (req, res) => {
   try {
-    const { page = 1, limit = 1000 } = req.query;
+    const {
+      page = 1,
+      limit = 1000,
+      to_warehouse_id,
+      searchCustomer,
+      searchReceiveCode,
+      searchShipper,
+    } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause = getMissingV1Clause({});
+    const whereClause = getImagesV1Clause({
+      searchCustomer,
+      searchReceiveCode,
+      searchShipper,
+      to_warehouse_id,
+    });
 
     let sql = loadSql("tmp_missing_sign_images_v1.sql")
       .replace("__WHERE_CLAUSE__", whereClause)

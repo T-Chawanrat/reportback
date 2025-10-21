@@ -20,6 +20,7 @@ const {
   getSla,
   getBookings,
   getReceiveNoImage,
+  getImagesV1,
   getMissingV2,
 } = require("../controllers/report-controller");
 
@@ -41,7 +42,8 @@ router.get("/05_n09n11", get05_n09n11);
 router.get("/05std", get05std);
 router.get("/sla", getSla);
 router.get("/bookings", getBookings);
-router.get("/noimage", getReceiveNoImage)
-router.get("/missingv2", getMissingV2)
+router.get("/noimage", getReceiveNoImage);
+router.get("/imagev1", getImagesV1);
+router.get("/missingv2", getMissingV2);
 
 module.exports = router;
